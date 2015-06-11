@@ -4,7 +4,7 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope){
         {
             name: 'Liste des indicateurs',
             icon: 'ion-ios-speedometer',
-            link: '/indicator'
+            link: '/indicators'
         },
         {
             name: 'Carte interactive',

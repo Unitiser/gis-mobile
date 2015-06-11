@@ -1,27 +1,32 @@
 angular.module('gisMobile').config(function($stateProvider){
   $stateProvider
   .state('indicator', {
-    url: '/indicator',
-    controller: 'IndicatorCtrl',
-    templateUrl: 'app/indicator/indicator.html'
-  })
-  .state('indicatorId', {
     url: '/indicator/:id',
     abstract: true,
-    templateUrl: 'app/indicator/indicatorId.html'
+    templateUrl: 'app/indicator/indicator.html'
   })
-  .state('indicatorId.tabs', {
-    url: '/indicator/:id/tabs',
+  .state('indicator.map', {
+    url: '/map',
     views: {
-        'indicator-graph': {
-            templateUrl: 'app/indicator/indicatorId.graph.html'
-        },
-        'indicator-table': {
-            templateUrl: 'app/indicator/indicatorId.table.html'
-        },
-        'indicator-map': {
-            templateUrl: 'app/indicator/indicatorId.map.html'
-        }
+      'map': {
+        templateUrl: 'app/indicator/indicator.map.html'
+      }
+    }
+  })
+  .state('indicator.graph', {
+    url: '/graph',
+    views: {
+      'graph': {
+        templateUrl: 'app/indicator/indicator.graph.html'
+      }
+    }
+  })
+  .state('indicator.table', {
+    url: '/table',
+    views: {
+      'table': {
+        templateUrl: 'app/indicator/indicator.table.html'
+      }
     }
   });
 });
