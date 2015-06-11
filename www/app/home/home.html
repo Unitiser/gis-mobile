@@ -1,0 +1,14 @@
+<!-- The title of the ion-view will be shown on the navbar -->
+<ion-view view-title="GIS Mobile - Menu principal">
+    <ion-content >
+        <!-- The content of the page -->
+        <ion-list>
+          <ion-item ng-repeat="item in items" class="item item-icon-left item-icon-right" href="#{{item.link}}">
+            <span class="icon {{item.icon}}"></span>
+            {{item.name}} 
+            <span class="icon ion-ios-arrow-right"></span>
+          </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>
+

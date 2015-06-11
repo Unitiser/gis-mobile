@@ -1,0 +1,11 @@
+<ion-view view-title="Liste des indicateurs">
+  <ion-content>
+    <ion-list>
+      <ion-item ng-repeat="indicator in indicators" class="item item-icon-left item-icon-right" ng-click="selectIndicator()" >
+        <span class="icon {{indicator.icon}}"></span>
+        {{indicator.name}}
+        <span class="icon ion-ios-arrow-right"></span>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
