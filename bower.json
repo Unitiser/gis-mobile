@@ -5,6 +5,7 @@
     "ionic": "driftyco/ionic-bower#1.0.0"
   },
   "dependencies": {
-    "leaflet": "~0.7.3"
+    "leaflet": "~0.7.3",
+    "lodash": "~3.9.3"
   }
 }

@@ -1,7 +1,7 @@
 <ion-view view-title="Liste des indicateurs">
   <ion-content>
     <ion-list>
-      <ion-item ng-repeat="indicator in indicators" class="item item-icon-left item-icon-right" href="#/indicator/test/map">
+      <ion-item ng-repeat="indicator in indicators" class="item item-icon-left item-icon-right" href="#/indicator/{{indicator.id}}">
         <span class="icon {{indicator.icon}}"></span>
         {{indicator.name}}
         <span class="icon ion-ios-arrow-right"></span>

@@ -1,15 +1,24 @@
-<ion-tabs class="tabs-icon-top tabs-background-dark tabs-color-stable">
+<div ng-show="tab == 'map'">
+    <div ng-include="'app/indicator/indicator.map.html'"></div>
+</div>
+<div ng-show="tab == 'graph'">
+    <div ng-include="'app/indicator/indicator.graph.html'"></div>
+</div>
+<div ng-show="tab == 'table'">
+    <div ng-include="'app/indicator/indicator.table.html'"></div>
+</div>
 
-  <ion-tab title="Carte" icon-on="ion-ios-speedometer" icon-off="ion-ios-speedometer-outline" href="#/indicator/test/map">
-    <ion-nav-view name="map"></ion-nav-view>
-  </ion-tab>
-
-  <ion-tab title="Graphique" icon-on="ion-ios-speedometer" icon-off="ion-ios-speedometer-outline" href="#/indicator/test/graph">
-    <ion-nav-view name="graph"></ion-nav-view>
-  </ion-tab>
-
-  <ion-tab title="Tableau" icon-on="ion-ios-speedometer" icon-off="ion-ios-speedometer-outline" href="#/indicator/test/table">
-    <ion-nav-view name="table"></ion-nav-view>
-  </ion-tab>
-
-</ion-tabs>
+<div class="tabs tabs-icon-top" button-bar>
+      <a ng-click="setTab('map')" class="tab-item {{tab == 'map' ? 'active' : ''}}">
+        <i class="icon ion-map"></i>
+        Carte
+      </a>
+      <a ng-click="setTab('graph')" class="tab-item {{tab == 'graph' ? 'active' : ''}}">
+        <i class="icon ion-ios-pie"></i>
+        Graphique
+      </a>
+      <a ng-click="setTab('table')" class="tab-item {{tab == 'table' ? 'active' : ''}}">
+        <i class="icon ion-ios-book"></i>
+        Tableau
+      </a>
+</div>
