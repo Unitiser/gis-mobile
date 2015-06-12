@@ -7674,3 +7674,8 @@ a.button {
   opacity: 0;
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
+
+#gis-map {
+  position: fixed;
+  height: 100%;
+  width: 100%; }

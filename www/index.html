@@ -7,6 +7,7 @@
 
     <link href="css/ionic.app.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="lib/leaflet/dist/leaflet.css">
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -15,6 +16,9 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/lodash/lodash.js"></script>
+    <script src="lib/leaflet/dist/leaflet.js"></script>
+    <script src="lib/proj4/dist/proj4.js"></script>
+    <script src="lib/pouchdb/dist/pouchdb.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -30,8 +34,8 @@
   </head>
   <body ng-app="gisMobile">
     <ion-nav-bar class="bar-positive">
-      <ion-nav-back-button class="button-clear">
-          <i class="ion-arrow-left-c"></i> Back
+        <ion-nav-back-button class="button-clear">
+            <i class="ion-arrow-left-c"></i> Back
         </ion-nav-back-button>
     </ion-nav-bar>
 

@@ -1,11 +1,11 @@
 <div ng-show="tab == 'map'">
-    <div ng-include="'app/indicator/indicator.map.html'"></div>
+    <div ng-include="'app/indicator/indicator.map.html'" onload="init['map']()"></div>
 </div>
 <div ng-show="tab == 'graph'">
-    <div ng-include="'app/indicator/indicator.graph.html'"></div>
+    <div ng-include="'app/indicator/indicator.graph.html'" onload="init['graph']()"></div>
 </div>
 <div ng-show="tab == 'table'">
-    <div ng-include="'app/indicator/indicator.table.html'"></div>
+    <div ng-include="'app/indicator/indicator.table.html'" onload="init['table']()"></div>
 </div>
 
 <div class="tabs tabs-icon-top" button-bar>
