@@ -26,3 +26,51 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
     height: 100%; 
     width: 100%;
 }
+
+#legend{
+    position: fixed;
+    bottom: 50px;
+    right: 0px;
+    display: block;
+    
+    .legend-title{
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .legend-icon{
+        width: 20px; 
+        height: 20px;
+        display: inline-block;
+    }
+
+    ul{
+        list-style: none;
+        
+    }
+}
+
+table{
+    width: 100%;
+    th, td{
+        padding: 5px 10px;
+        border: 1px solid gray;
+    }
+
+    th{
+      color: white;
+      background-color: gray;  
+    }
+
+    .center{
+        text-align: center;
+    }
+    .right{
+        text-align: right;
+    }
+}
+
+.sidescroll{
+    width: 100%;
+    overflow-x: scroll;
+}

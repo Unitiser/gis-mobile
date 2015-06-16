@@ -2,12 +2,14 @@
   "name": "HelloIonic",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.0.0"
+    "ionic": "driftyco/ionic-bower#1.0.0",
+    "angular-mocks": "~1.4.0"
   },
   "dependencies": {
     "leaflet": "~0.7.3",
     "lodash": "~3.9.3",
     "proj4": "~2.3.6",
-    "pouchdb": "~3.6.0"
+    "pouchdb": "~3.6.0",
+    "Chart.js": "~1.0.2"
   }
 }

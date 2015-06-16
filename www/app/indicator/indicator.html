@@ -1,7 +1,7 @@
 <div ng-show="tab == 'map'">
     <div ng-include="'app/indicator/indicator.map.html'" onload="init['map']()"></div>
 </div>
-<div ng-show="tab == 'graph'">
+<div ng-if="tab == 'graph'">
     <div ng-include="'app/indicator/indicator.graph.html'" onload="init['graph']()"></div>
 </div>
 <div ng-show="tab == 'table'">

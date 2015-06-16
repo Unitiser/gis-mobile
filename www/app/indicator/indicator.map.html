@@ -1,6 +1,14 @@
 <ion-view view-title="IndicatorId - Map">
   <ion-content has-bouncing="false" scroll="false">
-    <div id="gis-map"></div>
-
+    <div id="gis-map" data-tap-disabled="true"></div>
+    <div id="legend">
+        <ul>
+            <li class="legend-title">Légende</li>
+            <li ng-repeat="item in legend">
+                <span class="legend-icon" style="background-color: {{item.color.replace('0x', '#')}};"></span>
+                {{item.label}}
+            </li>
+        </ul>
+    </div>
   </ion-content>
 </ion-view>

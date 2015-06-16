@@ -1,5 +1,17 @@
 <ion-view view-title="IndicatorId - Graph">
   <ion-content>
-    <h1>My indicator Graph!</h1>
+    
+    <h3>Total homme/femme du secteur</h3>
+    <canvas id="pie" width="400" height="400"></canvas>
+    
+    <h3>Homme/femme par région</h3>
+    <ion-scroll zooming="true" direction="x" style="width: 500px; height: 400px">
+        <canvas id="bar" width="1000" height="400"></canvas>
+    </ion-scroll>
+    
+    <h3>Total par région</h3>
+    <ion-scroll zooming="true" direction="x" style="width: 500px; height: 400px">
+        <canvas id="barTotal" width="1000" height="400"></canvas>
+    </ion-scroll>
   </ion-content>
 </ion-view>
