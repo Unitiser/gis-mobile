@@ -1,3 +1,14 @@
+/*
+*   XML document parser 
+*   ----------------------------------------------------------------
+*   Description   Use a JavaScript object to extract data from a XML
+*                 document.
+*   Dependencies  Require angularjs services $q and $http
+*   Author        Nicolas Cusson
+*   Version       0.0.1
+*/
+
+
 angular.module('gisMobile').service('xmlparser', function($q, $http){
     //Load an xml file
     function loadFile(file){
@@ -36,26 +47,17 @@ angular.module('gisMobile').service('xmlparser', function($q, $http){
         var result = {};
         return $q(function(resolve, reject){
             parseFile(file).then(function(rootNode){
-                forEachObjectProperty(json, function(name, prop){
-                    parseNode(rootNode, name, prop, result);
-                });
-                resolve(result);
+                var name = rootNode.documentElement.tagName;
+                parseNode(rootNode, name, json, result);
+                resolve(result[name]);
             }, function(e){
                 reject(e);
             });
         });
     }
 
-    function forEachObjectProperty(object, cb){
-        for (var key in object) {
-           if (object.hasOwnProperty(key) && key != 'attrs') {
-              cb(key, object[key]);
-           }
-        }
-    }
-
     function parseNode(rootNode, name, prop, result){
-        if(name == 'attrs') return;
+        var isArray;
         var nodes = rootNode.getElementsByTagName(name);
 
         if(nodes.length > 0)
@@ -68,8 +70,12 @@ angular.module('gisMobile').service('xmlparser', function($q, $http){
             if(prop.attrs){
                 for (var j = prop.attrs.length - 1; j >= 0; j--) {
                     var attr = prop.attrs[j];
-                    if(attr == '$content') { 
+                    if(attr == '$content') {
                         parsedNode.content = curNode.textContent;
+                        continue;
+                    }
+                    if(attr == '$isArray') { 
+                        isArray = true;
                         continue;
                     }
                     if(curNode.attributes[attr])
@@ -78,14 +84,31 @@ angular.module('gisMobile').service('xmlparser', function($q, $http){
             }
 
             forEachObjectProperty(prop, function(name, prop){
+                //Skip non node properties
+                if(name == 'callback') return;
+                if(name == 'attrs') return;
                 parseNode(curNode, name, prop, parsedNode);
             });
+
+            if(!isArray && nodes.length == 1) {
+                result[name] = parsedNode; 
+                continue;
+            }
             result[name].push(parsedNode);
+        }
+        if(prop['callback']) prop['callback'](parsedNode);
+    }
+
+    // Iterate over each property of an object
+    function forEachObjectProperty(object, cb){
+        for (var key in object) {
+           if (object.hasOwnProperty(key) && key != 'attrs') {
+              cb(key, object[key]);
+           }
         }
     }
 
 
-    //
     return {
         loadFile: loadFile,
         parseFile: parseFile,

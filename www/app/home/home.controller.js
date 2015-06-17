@@ -1,4 +1,4 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, data){
+angular.module('gisMobile').controller("HomeCtrl", function($scope, data, Indicator){
     $scope.items = [
         // {
         //     name: 'Liste des indicateurs',
@@ -24,4 +24,5 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, data){
             });
         });
     });
+    Indicator.tryLoadCats();
 })

@@ -3,6 +3,7 @@ var $injector = angular.injector(['ng','gisMobile']);
 
 describe("XML data parser service", function() {
   var basePathXml = '/base/lib/xmlDocuments/';
+  var xmlparser;
   beforeEach(function(){
     xmlparser = $injector.get('xmlparser');
   });
@@ -66,48 +67,29 @@ describe("XML data parser service", function() {
   });
 
   it("should be able to read from complex json structure.", function(done){
-    var polygonStructure = {
-            attrs: ['srsName'],
-            outerBoundaryIs: {
-                LinearRing: {
-                    coordinates: { attrs: ['$content'] }
-                }
-            },
-            innerBoundaryIs: {
-                LinearRing: {
-                    coordinates: { attrs: ['$content'] }
-                }
-            }
-        };
     var structure = {
         section: {
             attrs: ['name'],
-            view: {
-                attrs: ['extent'],
-                layers: {
-                    layer: {
-                        zone: {
-                            attrs: ['id', 'name'],
-                            MultiPolygon: {
-                                attrs: ['srsName'],
-                                polygonMember: {
-                                    Polygon: polygonStructure
-                                }
-                            },
-                            Polygon: polygonStructure
-                        }
+            zone: {
+                attrs: ['id', 'label'],
+                Polygon : {
+                    attrs: ['$isArray'],
+                    outerBoundaryIs: {
+                        coordinates: { attrs: ['$content'] }
+                    },
+                    innerBoundaryIs: {
+                        coordinates: { attrs: ['$content'] }
                     }
                 }
             }
         }
     };
-
     xmlparser.readFile(basePathXml + 'dataViewSample.xml', structure ).then(function(data){
-        console.log(data['section'][0]['view'][0]['layers'][0]['layer'][0]['zone'][0]['Polygon'][0]['outerBoundaryIs'][0]['LinearRing'][0]['coordinates'][0]);
-        console.log(data['section'][0]['view'][0]['layers'][0]['layer'][0]['zone'][1]['Polygon'][0]['outerBoundaryIs'][0]['LinearRing'][0]['coordinates'][0]);
-        console.log(data['section'][0]['view'][0]['layers'][0]['layer'][0]['zone'][2]['Polygon'][0]['outerBoundaryIs'][0]['LinearRing'][0]['coordinates'][0]);
-        console.log(data['section'][0]['view'][0]['layers'][0]['layer'][0]['zone'][2]['MultiPolygon'][0]['polygonMember'][0]['Polygon'].length);
-        expect(structure).toBe('complex ...');
+        expect(data.section.zone[0].Polygon[0].innerBoundaryIs.coordinates.content).toBe('Omega');
+        expect(data.section.zone[0].Polygon[0].outerBoundaryIs.coordinates.content).toBe('Delta');
+        expect(data.section.zone[1].Polygon[0].outerBoundaryIs.coordinates.content).toBe('Blue');
+        expect(data.section.zone[2].Polygon[0].outerBoundaryIs.coordinates.content.trim()).toBe('Alpha-Beta');
+        expect(data.section.zone[2].Polygon[1].outerBoundaryIs.coordinates.content.trim()).toBe('Alpha');
         done();
     }, function(e){
         expect(e).toBe(null);
@@ -116,8 +98,37 @@ describe("XML data parser service", function() {
 
   });
 
-  it("should execute callback when ready certain element.", function(){
-    expect(false).toBe(true);
+  it("should execute callback when certain element are ready", function(done){
+    var structure = {
+        section: {
+            attrs: ['name'],
+            zone: {
+                attrs: ['id', 'label'],
+                Polygon : {
+                    attrs: ['$isArray'],
+                    outerBoundaryIs: {
+                        coordinates: { attrs: ['$content'] }
+                    },
+                    innerBoundaryIs: {
+                        coordinates: { attrs: ['$content'] }
+                    },
+                    callback: function(poly){
+                        expect(poly.innerBoundaryIs.coordinates.content).toBe('Omega');
+                        done();
+                    }
+                }
+            }
+        }
+    };
+
+    xmlparser.readFile(basePathXml + 'dataViewSample.xml', structure ).then(
+        function(data){
+            expect(data).toEqual(jasmine.any(Object));
+        }, 
+        function(e){
+            expect(e).toBe(null);
+        });
+
   });
 });
 // });

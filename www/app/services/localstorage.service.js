@@ -1,5 +1,5 @@
 angular.module('gisMobile').service('localStorage', function($q){
-    var db = new PouchDB('atlacdq');
+    var db = new PouchDB('gisMobile');
 
     db.info().then(function (info) {
       console.log(info);

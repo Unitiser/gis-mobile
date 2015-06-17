@@ -20,19 +20,12 @@ module.exports = function(config) {
 
     files: [
       'lib/angular/angular.js',
-      // 'lib/angular-animate/angular-animate.js',
-      // 'lib/angular-sanitize/angular-sanitize.js',
       'lib/angular-mocks/angular-mocks.js',
-      // 'lib/angular-ui-router/angular-ui-router.js',
-      // 'lib/ionic/js/ionic.js',
-      // 'lib/ionic/js/ionic-angular.js',
-      // 'lib/data.xml',
       'app/app.mock.js',
       'app/services/xmlparser.service.js',
-      // {pattern: 'app/services/xmlparser.service.js'},
+      'app/services/indicator.service.js',
       {pattern: 'app/**/*.spec.js'},
       {pattern: 'lib/xmlDocuments/*.xml', included: false, served: true}
-      // 'app/main-test.js'
     ],
     // list of files to exclude
     exclude: [
