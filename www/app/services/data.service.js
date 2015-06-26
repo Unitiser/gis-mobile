@@ -154,6 +154,7 @@ angular.module('gisMobile').service('data', function($http, localStorage){
 
         },
         getIndicators: function(cat, cb){
+            var t1 = new Date().getTime();
             var category = catCache[cat];
             var indicators = category.getElementsByTagName('indicator');
             var result = [];
@@ -167,6 +168,7 @@ angular.module('gisMobile').service('data', function($http, localStorage){
                 result.push(indicator);
                 indicatorCache[indicator.name] = indicator;
             };
+            console.log('Getting indicators took : ' + (new Date().getTime() - t1));
             cb(result);
         },
         getIndicatorByName: function(name){

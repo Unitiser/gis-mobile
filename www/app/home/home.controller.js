@@ -1,14 +1,5 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, data, Indicator){
+angular.module('gisMobile').controller("HomeCtrl", function($scope, data, Indicator, Auth, $http){
     $scope.items = [
-        // {
-        //     name: 'Liste des indicateurs',
-        //     icon: 'ion-ios-speedometer',
-        //     link: '/indicators'
-        // },
-        // {
-        //     name: 'Carte interactive',
-        //     icon: 'ion-earth'
-        // },
         {
             name: 'Paramètres',
             icon: 'ion-gear-b'
@@ -24,5 +15,42 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, data, Indica
             });
         });
     });
-    Indicator.tryLoadCats();
-})
+
+    $scope.login = function(){
+        Auth.login();
+    }
+
+    $scope.testGet = function(){
+        $http.defaults.headers.common.Authorization = "Bearer " + Auth.accessToken();
+        $http.get('/testuser')
+        .success(function(res){
+            console.log(res);
+        }).error(function(e){
+            console.log(e);
+        });
+        $http.defaults.headers.common.Authorization = "Basic";
+    }
+
+    $scope.testGetNoAccess = function(){
+        
+        $http.get('/nobody')
+        .success(function(res){
+            console.log(res);
+        }).error(function(e){
+            console.log(e);
+        });
+
+    }
+
+    $scope.testIndex = function(){
+        $http.get('/testindex')
+        .success(function(res){
+            console.log(res);
+        }).error(function(e){
+            console.log(e);
+        });
+    }
+    // Indicator.tryLoadCats();
+
+
+});

@@ -9,7 +9,7 @@
 */
 
 
-angular.module('gisMobile').service('xmlparser', function($q, $http){
+angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
     //Load an xml file
     function loadFile(file){
         return $q(function(resolve, reject){

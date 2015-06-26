@@ -21,11 +21,15 @@ module.exports = function(config) {
     files: [
       'lib/angular/angular.js',
       'lib/angular-mocks/angular-mocks.js',
+      'lib/lodash/lodash.js',
+      'lib/pouchdb/dist/pouchdb.js',
       'app/app.mock.js',
-      'app/services/xmlparser.service.js',
+      'app/components/xmlparser/xmlparser.service.js',
+      'app/components/pouchdb/pouchdb.service.js',
       'app/services/indicator.service.js',
-      {pattern: 'app/**/*.spec.js'},
-      {pattern: 'lib/xmlDocuments/*.xml', included: false, served: true}
+      'app/services/localstorage.service.js',
+      {pattern: 'app/**/*.spec.js'}
+      // {pattern: 'lib/xmlDocuments/*.xml', included: false, served: true}
     ],
     // list of files to exclude
     exclude: [

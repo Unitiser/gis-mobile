@@ -1,4 +1,4 @@
-angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, $ionicSideMenuDelegate, $ionicPlatform, data){
+angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, data){
     var tabTitles = {
         map : 'Carte',
         graph : 'Graphique',
@@ -75,10 +75,11 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             data.getIndicatorByRegion($state.params.id, addRegion);
         },
         graph: function(){
+
             console.log('Initializing graph');
 
             var ctx = document.getElementById("pie").getContext("2d");
-            var pieChart = new Chart(ctx).Pie($scope.pieData);
+            var pieChart = new Chart(ctx).Pie($scope.pieData, {animation: false});
 
             var ctx1 = document.getElementById("bar").getContext("2d");
             var barChart = new Chart(ctx1).Bar($scope.barData);

@@ -7709,5 +7709,15 @@ table {
     text-align: right; }
 
 .sidescroll {
-  max-width: 100%;
-  overflow-y: scroll; }
+  width: 100%;
+  overflow-x: scroll; }
+
+.barGraphWrap {
+  width: 100%;
+  height: 400px; }
+
+.pieWrap {
+  text-align: center; }
+
+.clear-bottom-nav {
+  margin-bottom: 50px; }

@@ -1,8 +1,10 @@
 angular.module('gisMobile').service('Indicator', function(xmlparser, $q){
     var indicators = [];
+    var categoriesDoc = false;
+    var apiUrl = '/lib/xmlDocuments/indicator.xml';
 
     //Load the categories
-    function loadCategories(url){
+    function loadCategories(){
         var structure = {
             category : {
                 attrs: ['name', 'label'],
@@ -15,28 +17,30 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q){
             }
         }
         return $q(function(resolve, reject){
-            xmlparser.readFile(url, structure)
-            .then(function(cats){
-                resolve(cats)
+            if(categoriesDoc) return resolve(categoriesDoc.category);
+            xmlparser.readFile(apiUrl, structure)
+            .then(function(doc){
+                categoriesDoc = doc;
+                resolve(doc.category)
             })
             .catch(function(e){
                 reject(e);
             });
-        })
+        });
     }
 
     //Get categories 
-    function getCategories(url){
+    function getCategories(){
         return $q(function(resolve, reject){
-            loadCategories(url)
-            .then(function(doc){
-                var cats = doc.category;
-                var categories = [];
+            loadCategories()
+            .then(function(cats){
+                categories = [];
                 for (var i = cats.length - 1; i >= 0; i--) {
                     categories.push({
                         name: cats[i].label,
                         icon: 'ion-map',
-                        link: '/cat/indicators/' + cats[i].name
+                        link: '/cat/indicators/' + cats[i].name,
+                        url: cats[i].url
                     });
                 };
                 resolve(categories);
@@ -47,20 +51,53 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q){
         });
     }
 
-    //Fetch categories from url
-    function fetchCategories(){
+    //Get indicators by category
+    function getIndicators(catName){
+        var deferred = $q.defer();
 
+        loadCategories().then(function(cats){
+            var cat = _.find(cats, { 'name': catName });
+            if(cat) return deferred.resolve(cat.indicator);
+            deferred.reject(catName + " not found");
+        })
+        .catch(function(e){
+            deferred.reject(e);
+        });
+
+        return deferred.promise;
     }
 
-    //Get indicators by category
-    //Get indicator
+    //Get indicator by name
+    function getIndicator(name){
+        var deferred = $q.defer();
+
+        loadCategories().then(function(cats){
+            var indicator = _.find(_.flatten(_.pluck(cats, 'indicator')), function(ind){ return ind.name.content == name });
+            var result = {};
+            if(!indicator) return deferred.reject(name + ' not found');
+            
+            _.forOwn(indicator, function(value, key){
+                result[key] = value.content;
+            });
+
+            deferred.resolve(result);
+        })
+        .catch(function(e){
+            deferred.reject(e);
+        });
+
+        return deferred.promise;
+    }
+
+    //Validate indicator version with localstorage
+
+    //Load indicator details
 
     return {
         indicators: indicators,
         getCategories: getCategories,
-        getIndicator: function(id){
-            return _.find(indicators, {id: id});
-        },
+        getIndicator: getIndicator,
+        getIndicators: getIndicators,
         tryLoadCats: loadCategories
     }
 });

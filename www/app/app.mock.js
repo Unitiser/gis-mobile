@@ -1,1 +1,1 @@
-angular.module('gisMobile', []);
+angular.module('gisMobile', ['gis.xmlparser']);
