@@ -1,1 +1,1 @@
-angular.module('gisMobile', ['gis.xmlparser']);
+angular.module('gisMobile', ['gis.xmlparser', 'gis.pouchdb']);

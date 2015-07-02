@@ -6,7 +6,8 @@
 angular.module('gisMobile', ['ionic', 
                              'base64', 
                              'ngResource', 
-                             'gis.xmlparser'])
+                             'gis.xmlparser',
+                             'gis.pouchdb'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
