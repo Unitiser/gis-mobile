@@ -40,14 +40,11 @@ angular.module('gisMobile')
             surfaceMembers: {
                 Polygon: {
                     exterior: {
-                        LinearRing: {
-                            posList: { attrs: ['$content'] }
-                        }
+                        posList: { attrs: ['$content'] }
                     },
                     interior: {
-                        LinearRing: {
-                            posList: { attrs: ['$content'] }
-                        }
+                        attrs: ['$isArray'],
+                        posList: { attrs: ['$content'] }
                     }
                 }
             }
