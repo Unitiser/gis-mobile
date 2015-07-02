@@ -1,82 +1,49 @@
-angular.module('gisMobile').service('localStorage', function($q){
-    var db;
-
-    //Open the database
-    function openDadabase(){
-        var deferred = $q;
-        db = new PouchDB('gisMobile');
-        db.info().then(function (info) {
-          console.log(info);
-        });
-    }
-
-    //Reset the database
-    function resetDatabase(){
-        db.destroy()
-        .then(function(){
-            db = new PouchDB('gisMobile');
-        });
+angular.module('gisMobile').service('localStorage', function($q, $pouchdb){
+    //Init
+    function init(){
+        $pouchdb.openDatabase('gisMobile');
     }
 
     //Save/update the structure document
+    function saveStructure(structure){
+        structure._id = 'structure';
+        return $pouchdb.put(structure);
+    }
+
     //Get the structure
+    function getStructure(){
+        return $pouchdb.get('structure');
+    }
 
     //Update/save an indicator
+    function saveIndicator(indicator){
+        indicator._id = indicator.name;
+        return $pouchdb.put(indicator);
+    }
+
     //Get an indicator
+    function getIndicator(name){
+        return $pouchdb.get(name);
+    }
 
     //Save/update the geometry
-    //Get the geomety
-
-    //Save a doc in the db
-    function put(doc){
-        var deferred = $q.defer();
-        
-        db.put(doc)
-        .then(function(){
-            deferred.resolve('great success!');
-        })
-        .catch(function(err){
-            deferred.reject(err);
-        });
-
-        return deferred.promise;
+    function saveGeometry(geo){
+        geo._id = 'geometry'
+        return $pouchdb.put(geo)
     }
 
-
-    //Get a doc from the db
-    function get(id){
-        var deferred = $q.defer();
-
-        db.get(id).then(function(doc){
-            deferred.resolve(doc);
-        }).catch(function(err){
-            deferred.reject(err);
-        });
-
-        return deferred.promise;
+    //Get the geometry
+    function getGeometry(){
+        return $pouchdb.get('geometry')
     }
 
+    init();
     return {
-        put: function(doc){
-            return $q(function(resolve, reject){
-                db.put(doc)
-                .then(function(){
-                    resolve('great success!');
-                })
-                .catch(function(err){
-                    reject(err);
-                });
-            })
-
-        },
-        get: function(id, cb){
-            return $q(function(resolve, reject){
-                db.get(id).then(function(doc){
-                    resolve(doc);
-                }).catch(function(err){
-                    reject(err);
-                });
-            });
-        }
+        saveStructure: saveStructure,
+        getStructure: getStructure,
+        getIndicator: getIndicator,
+        saveIndicator: saveIndicator,
+        getGeometry: getGeometry,
+        saveGeometry: saveGeometry
     }
 });
