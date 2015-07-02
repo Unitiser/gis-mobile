@@ -94,7 +94,7 @@ describe("Indicator service", function() {
 
     it('should list indicator by categories', function(done){
         var catName = 'activity_sector';
-        Indicator.getIndicators(catName)
+        Indicator.getByCategory(catName)
         .then(function(indicators){
             expect(indicators.length).toBe(2);
         })
@@ -106,7 +106,7 @@ describe("Indicator service", function() {
     });
 
     it('should retrieve a single indicator', function(done){
-        Indicator.getIndicatorSummary('primary')
+        Indicator.getSummary('primary')
         .then(function(indicator){ expect(indicator.id).toBe('primary'); })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(function(){done()});
@@ -116,7 +116,7 @@ describe("Indicator service", function() {
     });
 
     it('should retrieve a single indicator #2', function(done){
-        Indicator.getIndicatorSummary('something')
+        Indicator.getSummary('something')
         .then(function(indicator){ expect(indicator.id).toBe('something'); })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(done);
@@ -125,7 +125,7 @@ describe("Indicator service", function() {
     });
 
     it('should fail when retrieving non existing indicator', function(done){
-        Indicator.getIndicatorSummary('unicorns')
+        Indicator.getSummary('unicorns')
         .then(function(indicator){ expect(indicator.id).toBe(null); })
         .catch(function(e){ expect(e).toBe('unicorns not found'); })
         .finally(done);
@@ -134,13 +134,13 @@ describe("Indicator service", function() {
     });
 
     it('should cache the category document', function(done){
-        Indicator.getIndicatorSummary('something')
+        Indicator.getSummary('something')
         .then(function(indicator){  })
         .catch(function(e){  })
 
         $rootScope.$digest();
 
-        Indicator.getIndicatorSummary('something')
+        Indicator.getSummary('something')
         .then(function(indicator){ expect(indicator.id).toBe('something'); })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(done);
@@ -150,7 +150,7 @@ describe("Indicator service", function() {
     });
 
     it('should load the details of the indicator', function(){
-        Indicator.getIndicator('primary')
+        Indicator.get('primary')
         .then(function(indicator){
             expect(indicator.name).toBe('primary');
             expect(indicator.param.length).toBe(2);
@@ -162,7 +162,7 @@ describe("Indicator service", function() {
 
     it('should validate an indicator version localStorage vs structure', function(done){
         localStorageMock.isIndicatorCached = true;
-        Indicator.validateIndicator('primary')
+        Indicator.validate('primary')
         .then(function(isValid){
             expect(isValid).toBe(true);
             done();

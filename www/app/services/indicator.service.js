@@ -1,6 +1,4 @@
 angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localStorage, $rootScope, STRUCTURE_URL, STRUCTURE_JSON, INDICATOR_JSON){
-    var indicators = [];
-
     //Load the categories
     function loadCategories(){
         //Todo check for connection before loading from local storage  
@@ -28,7 +26,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
                 categories.push({
                     name: cats[i].label,
                     icon: 'ion-map',
-                    link: '/cat/indicators/' + cats[i].name,
+                    link: '/cat/indicators/' + cats[i].id,
                 });
             };
             return categories;
@@ -36,7 +34,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     }
 
     //Get indicators by category
-    function getIndicators(catId){
+    function getByCategory(catId){
         return loadCategories().then(function(cats){
             var cat = _.find(cats, { 'id': catId });
             if(cat) return cat.indicator;
@@ -45,7 +43,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     }
 
     //Get indicator by id
-    function getIndicatorSummary(id){
+    function getSummary(id){
         return loadCategories().then(function(cats){
             var indicator = _.find( _.flatten( _.pluck(cats, 'indicator') ), function(ind){ return ind.id == id });
 
@@ -56,13 +54,13 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     }
 
     //Check if indicator version is the same as localStorage
-    function validateIndicator(id){
+    function validate(id){
         var localVersion;
         var listVersion;
         return localStorage.getIndicator(id)
         .then(function(local){
             localVersion = local.version.content;
-            return getIndicatorSummary(id)
+            return getSummary(id)
         })
         .then(function(summary){
             listVersion = summary.version;
@@ -74,7 +72,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     }
 
     //Load indicator details
-    function getIndicator(id){
+    function get(id){
         return localStorage
         .getIndicator(id)
         .catch(function(e){
@@ -82,7 +80,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
             var xmlFile;
             var staticPart;
             var summary;
-            return getIndicatorSummary(id).then(function(sum){
+            return getSummary(id).then(function(sum){
                 summary = sum;
                 return xmlparser.loadFile(summary.url);
             })
@@ -129,11 +127,10 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
 
     //Return the public api
     return {
-        indicators: indicators,
         getCategories: getCategories,
-        getIndicator: getIndicator,
-        getIndicatorSummary: getIndicatorSummary,
-        getIndicators: getIndicators,
-        validateIndicator: validateIndicator
+        get: get,
+        getSummary: getSummary,
+        getByCategory: getByCategory,
+        validate: validate
     }
 });

@@ -7,8 +7,8 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
     //Load geometry
     function load(){
         //Hook posList call back to GEOMETRY_JSON
-        GEOMETRY_JSON.domainSet.MultiSurface.surfaceMembers.Polygon.exterior.posList.callback = processPosList;
-        GEOMETRY_JSON.domainSet.MultiSurface.surfaceMembers.Polygon.interior.posList.callback = processPosList;
+        GEOMETRY_JSON.domainSet.MultiSurface.Polygon.exterior.posList.callback = processPosList;
+        GEOMETRY_JSON.domainSet.MultiSurface.Polygon.interior.posList.callback = processPosList;
 
         return localStorage.getGeometry()
         .then(function(geo){ //If we can find the geometry object, return it
@@ -17,6 +17,7 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
         .catch(function(e){ //If not get the url from structure if it exists
             if(e.name != 'not_found') return e;
             return localStorage.getStructure()
+            .then(function(struct){ return struct.geometry; })
             .catch(function(){ //If structure doesnt exist load it
                 if(e.name != 'not_found') return e;
 
@@ -34,7 +35,7 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
             });
         });
     }
-
+    
     //Change projection
     function changeProjection(point){
         return proj4('EPSG:32188','EPSG:4326', point);
@@ -59,10 +60,7 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
 
     //Get geometry
     function get(){
-        return load()
-        .then(function(geo){
-            return geo;
-        });
+        return load();
     }
 
     //Validate version

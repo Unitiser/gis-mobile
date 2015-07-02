@@ -1,18 +1,10 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, data, Indicator, Auth, $http){
-    $scope.items = [
-        {
+angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Auth, $http){
+    Indicator.getCategories()
+    .then(function(cats){
+        $scope.items = cats;
+        $scope.items.push({
             name: 'Paramètres',
             icon: 'ion-gear-b'
-        }
-    ]
-
-    data.getCategories(function(cats){
-        _.each(cats,function(cat){
-            $scope.items.unshift({
-                name: cat.label,
-                icon: 'ion-map',
-                link: '/cat/indicators/' + cat.name
-            });
         });
     });
 
@@ -50,7 +42,29 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, data, Indica
             console.log(e);
         });
     }
-    // Indicator.tryLoadCats();
+
+    // $scope.testGetIndicator = function(){
+    //     Indicator.get('sample')
+    //     .then(function(indicator){
+    //         console.log(indicator);
+    //     })
+    //     .catch(function(e){
+    //         console.log(e);
+    //     });
+    // }
+
+    // $scope.testValidateVersion = function(){
+    //     Indicator.validate('sample')
+    //     .then(function(isValid){
+    //         console.log(isValid);
+    //     })
+    //     .catch(function(e){ console.log(e); });
+    // }
+
+    // $scope.testGeometry = function(){
+    //     Geometry.get()
+    //     .then(function(geo){ console.log(geo); });
+    // }
 
 
 });

@@ -1,10 +1,10 @@
-angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, data){
+angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, data, Geometry){
     var tabTitles = {
         map : 'Carte',
         graph : 'Graphique',
         table : 'Tableau'
     }
-    var map;
+    var map, indicator, geometry;
     $scope.regions = [];
     $scope.pieData = [{
             value: 0,
@@ -54,38 +54,69 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
 
     $scope.setTab = function(tab){
         $scope.tab = tab;
-        var indicatorName;
-        if($state.params.cat){
-            indicatorName = data.getIndicatorByName($state.params.id).label;
-        }else{
-            indicatorName = Indicator.getIndicator($state.params.id).name;
-        }
+        $ionicNavBarDelegate.title(indicator.label + " - " + tabTitles[tab]);
+    }
 
-        $ionicNavBarDelegate.title(indicatorName + " - " + tabTitles[tab]);
+    $scope.getData = function(){
+        Indicator.get($state.params.id)
+        .then(function(ind){
+            console.log(ind);
+            indicator = ind;
+            return Geometry.get();
+        }).then(function(geo){
+            geometry = geo;
+            
+            $scope.init['map']();
+
+            $scope.setTab('map');
+
+        });
     }
 
     $scope.init = {
         map: function(){
             console.log('Initializing map');
+            
             //Load leaflet
             map = L.map('gis-map', { zoomControl:false }).setView([45.88451167585413, -72.50152587890625], 10);
+            
             // add an OpenStreetMap tile layer
             L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
             map.attributionControl.setPrefix('');
-            data.getIndicatorByRegion($state.params.id, addRegion);
+            console.log(geometry);
+            _.each(geometry.domainSet.MultiSurface, function(zone){
+                console.log(zone);
+                for (var i = zone.Polygon.length - 1; i >= 0; i--) {
+                    var polygon = []
+                    polygon.push(zone.Polygon[i].exterior.posList.content);
+                    if(zone.Polygon[i].interior){
+                        for (var j = zone.Polygon[i].interior.length - 1; j >= 0; j--) {
+                            polygon.push(zone.Polygon[i].interior[j].posList.content);
+                        };
+                    }
+                    // console.log(polygon);
+                    map.addLayer(new L.Polygon(polygon),{
+                        fill: true,
+                        fillOpacity: 0.6,
+                        color: 'black',
+                        // fillColor: getColor(region.total, legend),
+                        weight: 1
+                    });
+                };
+            });
         },
         graph: function(){
 
             console.log('Initializing graph');
 
-            var ctx = document.getElementById("pie").getContext("2d");
-            var pieChart = new Chart(ctx).Pie($scope.pieData, {animation: false});
+            // var ctx = document.getElementById("pie").getContext("2d");
+            // var pieChart = new Chart(ctx).Pie($scope.pieData, {animation: false});
 
-            var ctx1 = document.getElementById("bar").getContext("2d");
-            var barChart = new Chart(ctx1).Bar($scope.barData);
+            // var ctx1 = document.getElementById("bar").getContext("2d");
+            // var barChart = new Chart(ctx1).Bar($scope.barData);
 
-            var ctx2 = document.getElementById("barTotal").getContext("2d");
-            var barTotalChart = new Chart(ctx2).Bar($scope.barTotalData);
+            // var ctx2 = document.getElementById("barTotal").getContext("2d");
+            // var barTotalChart = new Chart(ctx2).Bar($scope.barTotalData);
         },
         table: function(){
             console.log('Initializing table');
@@ -131,27 +162,28 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
         }
     }
 
-    $scope.setTab('map');
+    $scope.getData();
+    // $scope.setTab('map');
 });
 
-data = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-        {
-            label: "My First dataset",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
-            data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.5)",
-            strokeColor: "rgba(151,187,205,0.8)",
-            highlightFill: "rgba(151,187,205,0.75)",
-            highlightStroke: "rgba(151,187,205,1)",
-            data: [28, 48, 40, 19, 86, 27, 90]
-        }
-    ]
-};
+// data = {
+//     labels: ["January", "February", "March", "April", "May", "June", "July"],
+//     datasets: [
+//         {
+//             label: "My First dataset",
+//             fillColor: "rgba(220,220,220,0.5)",
+//             strokeColor: "rgba(220,220,220,0.8)",
+//             highlightFill: "rgba(220,220,220,0.75)",
+//             highlightStroke: "rgba(220,220,220,1)",
+//             data: [65, 59, 80, 81, 56, 55, 40]
+//         },
+//         {
+//             label: "My Second dataset",
+//             fillColor: "rgba(151,187,205,0.5)",
+//             strokeColor: "rgba(151,187,205,0.8)",
+//             highlightFill: "rgba(151,187,205,0.75)",
+//             highlightStroke: "rgba(151,187,205,1)",
+//             data: [28, 48, 40, 19, 86, 27, 90]
+//         }
+//     ]
+// };

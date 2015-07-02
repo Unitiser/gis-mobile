@@ -8,7 +8,7 @@ angular.module('gisMobile')
 //JSON object to extract data from the structure document
 .constant('STRUCTURE_JSON', {
     category : {
-        attrs: ['name', 'label'],
+        attrs: ['id', 'label'],
         indicator: {
             attrs: ['$isArray', 'id', 'label', 'version', 'url'],
         }
@@ -37,15 +37,13 @@ angular.module('gisMobile')
             attrs: ['id'],
             name: { attrs: ['$content'] },
             description: { attrs: ['$content'] },
-            surfaceMembers: {
-                Polygon: {
-                    exterior: {
-                        posList: { attrs: ['$content'] }
-                    },
-                    interior: {
-                        attrs: ['$isArray'],
-                        posList: { attrs: ['$content'] }
-                    }
+            Polygon: {
+                exterior: {
+                    posList: { attrs: ['$content'] }
+                },
+                interior: {
+                    attrs: ['$isArray'],
+                    posList: { attrs: ['$content'] }
                 }
             }
         }
