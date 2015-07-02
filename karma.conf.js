@@ -22,6 +22,7 @@ module.exports = function(config) {
       'lib/angular/angular.js',
       'lib/angular-mocks/angular-mocks.js',
       'lib/lodash/lodash.js',
+      'lib/proj4/dist/proj4.js',
       'lib/pouchdb/dist/pouchdb.js',
       'app/app.mock.js',
       'app/config.js',
