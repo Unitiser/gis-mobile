@@ -1,6 +1,5 @@
-angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localStorage, $rootScope){
+angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localStorage, $rootScope, STRUCTURE_URL, STRUCTURE_JSON, INDICATOR_JSON){
     var indicators = [];
-    var apiUrl = '/lib/xmlDocuments/indicator.xml';
 
     //Load the categories
     function loadCategories(){
@@ -12,7 +11,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         .catch(function(e){
             if(e.name != 'not_found') return e;
             
-            return xmlparser.readFile(apiUrl, structureStruct)
+            return xmlparser.readFile(STRUCTURE_URL, STRUCTURE_JSON)
             .then(function(doc){
                 localStorage.saveStructure(doc);
                 return doc.category;
@@ -37,39 +36,33 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     }
 
     //Get indicators by category
-    function getIndicators(catName){
+    function getIndicators(catId){
         return loadCategories().then(function(cats){
-            var cat = _.find(cats, { 'name': catName });
+            var cat = _.find(cats, { 'id': catId });
             if(cat) return cat.indicator;
-            return $q.reject(catName + " not found");
+            return $q.reject(catId + " not found");
         });
     }
 
-    //Get indicator by name
-    function getIndicatorSummary(name){
+    //Get indicator by id
+    function getIndicatorSummary(id){
         return loadCategories().then(function(cats){
-            var indicator = _.find( _.flatten( _.pluck(cats, 'indicator') ), function(ind){ return ind.name.content == name });
+            var indicator = _.find( _.flatten( _.pluck(cats, 'indicator') ), function(ind){ return ind.id == id });
 
-            if(!indicator) return $q.reject(name + ' not found');
-            
-            var result = {};
-            
-            _.forOwn(indicator, function(value, key){
-                result[key] = value.content;
-            });
+            if(!indicator) return $q.reject(id + ' not found');
 
-            return result;
+            return indicator;
         });
     }
 
     //Check if indicator version is the same as localStorage
-    function validateIndicator(name){
+    function validateIndicator(id){
         var localVersion;
         var listVersion;
-        return localStorage.getIndicator(name)
+        return localStorage.getIndicator(id)
         .then(function(local){
             localVersion = local.version.content;
-            return getIndicatorSummary(name)
+            return getIndicatorSummary(id)
         })
         .then(function(summary){
             listVersion = summary.version;
@@ -81,22 +74,22 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     }
 
     //Load indicator details
-    function getIndicator(name){
+    function getIndicator(id){
         return localStorage
-        .getIndicator(name)
+        .getIndicator(id)
         .catch(function(e){
             //Indicator was not found, fetch it from http
             var xmlFile;
             var staticPart;
             var summary;
-            return getIndicatorSummary(name).then(function(sum){
+            return getIndicatorSummary(id).then(function(sum){
                 summary = sum;
                 return xmlparser.loadFile(summary.url);
             })
             .then(function(fileContent){
                 //Parse the static part of the file
                 xmlFile = fileContent;
-                return xmlparser.readXML(xmlFile, indicatorStaticStruct);
+                return xmlparser.readXML(xmlFile, INDICATOR_JSON);
             })
             .then(function(staticP){
                 //Parse the dynamic part of the file
@@ -107,7 +100,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
             .then(function(dynamicP){
                 //Merge the 3 parts
                 staticPart.value = dynamicP.value;
-                staticPart.name = summary.name;
+                staticPart.name = summary.id;
                 staticPart.label = summary.label;
                 staticPart.url = summary.url;
                 staticPart.description = staticPart.description.content;
@@ -118,31 +111,6 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
                 return staticPart;
             });
         });
-    }
-
-    //Structure of the xml documents
-    var structureStruct = {
-        category : {
-            attrs: ['name', 'label'],
-            indicator: {
-                attrs: ['$isArray'],
-                name: { attrs: ['$content'] },
-                label: { attrs: ['$content'] },
-                version: { attrs: ['$content'] },
-                url: { attrs: ['$content'] }
-            }
-        }
-    }
-
-    var indicatorStaticStruct = {
-        name: { attrs: ['$content'] },
-        description: { attrs: ['$content'] },
-        param: {attrs: ['name', 'type', '$content'] },
-        legend: {
-            attrs: ['value', 'for'],
-            item: { attrs: ['min','max','color','$content'] }
-        },
-        version: { attrs: ['date', '$content'] }
     }
 
     //Build the dynamic structure for extration

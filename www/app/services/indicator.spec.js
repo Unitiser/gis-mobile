@@ -107,7 +107,7 @@ describe("Indicator service", function() {
 
     it('should retrieve a single indicator', function(done){
         Indicator.getIndicatorSummary('primary')
-        .then(function(indicator){ expect(indicator.name).toBe('primary'); })
+        .then(function(indicator){ expect(indicator.id).toBe('primary'); })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(function(){done()});
 
@@ -117,7 +117,7 @@ describe("Indicator service", function() {
 
     it('should retrieve a single indicator #2', function(done){
         Indicator.getIndicatorSummary('something')
-        .then(function(indicator){ expect(indicator.name).toBe('something'); })
+        .then(function(indicator){ expect(indicator.id).toBe('something'); })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(done);
 
@@ -126,7 +126,7 @@ describe("Indicator service", function() {
 
     it('should fail when retrieving non existing indicator', function(done){
         Indicator.getIndicatorSummary('unicorns')
-        .then(function(indicator){ expect(indicator.name).toBe(null); })
+        .then(function(indicator){ expect(indicator.id).toBe(null); })
         .catch(function(e){ expect(e).toBe('unicorns not found'); })
         .finally(done);
 
@@ -141,7 +141,7 @@ describe("Indicator service", function() {
         $rootScope.$digest();
 
         Indicator.getIndicatorSummary('something')
-        .then(function(indicator){ expect(indicator.name).toBe('something'); })
+        .then(function(indicator){ expect(indicator.id).toBe('something'); })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(done);
 
@@ -174,38 +174,38 @@ describe("Indicator service", function() {
     //Mocked return objects
     var indicatorJsonMock = {
         category: [{
-            name: 'activity_sector',
+            id: 'activity_sector',
             label: "Emplois par secteur d'activité",
             indicator: [{
-                name: { content: 'primary' },
-                label: { content: 'Primaire' },
-                version: { content: "1.0"  },
-                url: { content: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml" }
+                id: 'primary',
+                label: 'Primaire',
+                version: "1.0",
+                url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml"
             }, {
-                name: { content: 'secondary' },
-                label: { content: 'Secondaire' },
-                version: { content: "1.0" },
-                url: { content: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_2_2011.xml" }
+                id: 'secondary',
+                label: 'Secondaire',
+                version: "1.0",
+                url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_2_2011.xml"
             }]
         },{
-            name: 'competency_level',
+            id: 'competency_level',
             label: 'Emplois par niveau de compétence',
             indicator: [{
-                name: { content: 'something' },
-                label: { content: 'Else' },
-                version: { content: "1.0" },
-                url: { content: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml" }
+                id: 'something',
+                label: 'Else',
+                version: "1.0",
+                url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml"
             }]
         }],
         geometry: {
-            name: "cdq",
+            id: "cdq",
             label: "Centre-du-Québec",
             version: "1.0"
         }
     };
 
     var sampleIndicatorSummary = {
-        name: 'something',
+        id: 'something',
         label: 'Else',
         version: "1.0",
         url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml"
