@@ -1,7 +1,7 @@
-angular.module('gisMobile').service('localStorage', function($q, $pouchdb){
+angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL_DB_NAME){
     //Init
     function init(){
-        $pouchdb.openDatabase('gisMobile');
+        $pouchdb.openDatabase(LOCAL_DB_NAME);
     }
 
     //Save/update the structure document

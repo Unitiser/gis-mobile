@@ -30,4 +30,4 @@ angular.module('gisMobile', ['ionic',
   });
 
   $urlRouterProvider.otherwise('/');
-})
+});

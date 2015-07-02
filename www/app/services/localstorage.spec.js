@@ -186,7 +186,5 @@ describe("localStorage service", function() {
             date: '20/10/2012',
             content: '1.0'
         }
-
-
     };
 });
