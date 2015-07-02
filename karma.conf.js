@@ -28,6 +28,7 @@ module.exports = function(config) {
       'app/components/pouchdb/pouchdb.service.js',
       'app/services/indicator.service.js',
       'app/services/localstorage.service.js',
+      'app/services/geometry.service.js',
       {pattern: 'app/**/*.spec.js'}
       // {pattern: 'lib/xmlDocuments/*.xml', included: false, served: true}
     ],
