@@ -10,7 +10,7 @@
 
 
 angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
-    //Load an xml file
+    //Load a file and return its content
     function loadFile(file){
         return $q(function(resolve, reject){
             $http.get(file)
@@ -23,36 +23,43 @@ angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
         });
     }
 
-    //Parse xml file
+    //Parse xml file, return a dom parser
     function parseFile(file){
-        return $q(function(resolve, reject){
-            loadFile(file).then(function(fileContent){
-                var domParser = new DOMParser();
-                var result = domParser.parseFromString(fileContent, 'text/xml');
-
-                //Check for errors
-                var hasError = result.getElementsByTagName('parsererror');
-                if(hasError.length) reject('INVALID XML');
-                
-                resolve(result);
-            },
-            function(e){
-                reject(e);
-            });
+        return loadFile(file).then(function(fileContent){
+            return parseXML(fileContent);
         });
     }
 
-    //Construct an object array from json structure
+    //Parse xml string and return a dom parser
+    function parseXML(xml){
+        var defer = $q.defer();
+        var domParser = new DOMParser();
+        var result = domParser.parseFromString(xml, 'text/xml');
+
+        //Check for errors
+        var hasError = result.getElementsByTagName('parsererror');
+        if(hasError.length) defer.reject('INVALID XML');
+
+        defer.resolve(result);
+
+        return defer.promise;
+    }
+
+    //Fetch http xmp and construct an object from json structure
     function readFile(file, json){
         var result = {};
-        return $q(function(resolve, reject){
-            parseFile(file).then(function(rootNode){
-                var name = rootNode.documentElement.tagName;
-                parseNode(rootNode, name, json, result);
-                resolve(result[name]);
-            }, function(e){
-                reject(e);
-            });
+        return loadFile(file).then(function(xml){
+            return readXML(xml, json);
+        });
+    }
+
+    //Read xml data directly and extract from json structure
+    function readXML(xml, json){
+        var result = {};
+        return parseXML(xml).then(function(rootNode){
+            var name = rootNode.documentElement.tagName;
+            parseNode(rootNode, name, json, result);
+            return result[name];
         });
     }
 
@@ -112,6 +119,7 @@ angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
     return {
         loadFile: loadFile,
         parseFile: parseFile,
-        readFile: readFile
+        readFile: readFile,
+        readXML: readXML
     };
 });

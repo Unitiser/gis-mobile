@@ -15,62 +15,18 @@ describe("XML data parser service", function() {
     //Mock basic document
     $httpBackend.whenGET('/test/xml/basicdoc')
         .respond(function(method, url, data, headers){
-            var xml = '<document>' +
-               '<section name="detail">' +
-                   '<info></info>' +
-                   '<info></info>' +
-                   '<info></info>' +
-                   '<info></info>' +
-               '</section>' +
-               '<section name="legend"></section>' +
-               '<section name="composition"></section>' +
-               '<section name="values"></section>' +
-               '<section name="view"></section>' +
-            '</document>';
-            return [200, xml, {}]
+            return [200, basicMock, {}]
         });
 
     //Mock invalid document
     $httpBackend.whenGET('/test/xml/invaliddoc')
         .respond(function(method, url, data, headers){
-            var xml = '<document>' +
-               '<section name="view"></section>' +
-               '<section name="values"></section>' +
-               '<section name="composition"></section>' +
-               '<section name="legend"></section>' +
-               '<section name="detail">' +
-                   '<info></info>' +
-                   '<info></info>' +
-                   '<info></info>' +
-                   '<info></info>' +
-            'This should not be here...';
-            return [200, xml, {}]
+            return [200, invalidMock, {}]
         });
 
     //Mock complex document
     $httpBackend.whenGET('/test/xml/complexdoc').respond(function(method, url, data, headers){
-        var xml = '<?xml version="1.0" ?>' +
-        '<document>' +
-          '<section name="view" controller="ViewSectionController" model="ViewSectionModel">' +
-             '<view extent="348660.625 -5158981.5 120136.4375 108345">' +
-                    '<layers>' +
-                        '<!-- Zone Layer -->' +
-                        '<layer name="zone" layer="ZoneLayer" controller="ZoneLayerController" model="ZoneLayerModel">' +
-                            '<zone id="z0" label="Kingsey Falls" xmlns:gml="http://www.opengis.net/gml" >' +
-                                '<gml:MultiPolygon srsName="EPSG:32188"><gml:polygonMember><gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Alpha </gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></gml:polygonMember><gml:polygonMember><gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Alpha-Beta</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></gml:polygonMember></gml:MultiPolygon>' +
-                            '</zone>' +
-                            '<zone id="z1" label="Arthabaska zone 1" xmlns:gml="http://www.opengis.net/gml" >' +
-                                '<gml:Polygon srsName="EPSG:32188"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Blue</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>' +
-                            '</zone>' +
-                            '<zone id="z2" label="Arthabaska zone 2" xmlns:gml="http://www.opengis.net/gml" >' +
-                                '<gml:Polygon srsName="EPSG:32188"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Delta</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs><gml:innerBoundaryIs><gml:LinearRing><gml:coordinates>Omega</gml:coordinates></gml:LinearRing></gml:innerBoundaryIs></gml:Polygon>' +
-                            '</zone>' +
-                        '</layer>' +
-                    '</layers>' +
-                '</view>' +
-            '</section>' +
-        '</document>';
-        return [200, xml, {}]
+        return [200, complexMock, {}]
     })
    }));
 
@@ -140,6 +96,25 @@ describe("XML data parser service", function() {
     $httpBackend.flush();
   });
 
+  it("should be able to read xml directly", function(){
+    var structure = {
+    'section': {
+            attrs: ['name', 'controller', 'model'],
+            info: { attrs: ['name', '$content'] },
+            item: { attrs: ['min', 'max', 'color', 'label'] }
+        }
+    };
+    xmlparser.readXML(basicMock, structure).then(function(data){
+        expect(data['section'][0].name).toBe("view");
+        expect(data['section'][1].name).toBe("values");
+        expect(data['section'][2].name).toBe("composition");
+        expect(data['section'][3].name).toBe("legend");
+        expect(data['section'][4].name).toBe("detail");
+        expect(data['section'][4]['info'].length).toBe(4);
+        done();
+    });
+  });
+
   it("should be able to read from complex json structure.", function(done){
     $httpBackend.expectGET('/test/xml/complexdoc');
     var structure = {
@@ -206,4 +181,52 @@ describe("XML data parser service", function() {
         });
     $httpBackend.flush();
   });
+
+
+  var basicMock = '<document>' +
+       '<section name="detail">' +
+           '<info></info>' +
+           '<info></info>' +
+           '<info></info>' +
+           '<info></info>' +
+       '</section>' +
+       '<section name="legend"></section>' +
+       '<section name="composition"></section>' +
+       '<section name="values"></section>' +
+       '<section name="view"></section>' +
+    '</document>';
+  
+  var invalidMock = '<document>' +
+     '<section name="view"></section>' +
+     '<section name="values"></section>' +
+     '<section name="composition"></section>' +
+     '<section name="legend"></section>' +
+     '<section name="detail">' +
+         '<info></info>' +
+         '<info></info>' +
+         '<info></info>' +
+         '<info></info>' +
+  'This should not be here...';
+
+  var complexMock = '<?xml version="1.0" ?>' +
+  '<document>' +
+    '<section name="view" controller="ViewSectionController" model="ViewSectionModel">' +
+       '<view extent="348660.625 -5158981.5 120136.4375 108345">' +
+              '<layers>' +
+                  '<!-- Zone Layer -->' +
+                  '<layer name="zone" layer="ZoneLayer" controller="ZoneLayerController" model="ZoneLayerModel">' +
+                      '<zone id="z0" label="Kingsey Falls" xmlns:gml="http://www.opengis.net/gml" >' +
+                          '<gml:MultiPolygon srsName="EPSG:32188"><gml:polygonMember><gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Alpha </gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></gml:polygonMember><gml:polygonMember><gml:Polygon><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Alpha-Beta</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></gml:polygonMember></gml:MultiPolygon>' +
+                      '</zone>' +
+                      '<zone id="z1" label="Arthabaska zone 1" xmlns:gml="http://www.opengis.net/gml" >' +
+                          '<gml:Polygon srsName="EPSG:32188"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Blue</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>' +
+                      '</zone>' +
+                      '<zone id="z2" label="Arthabaska zone 2" xmlns:gml="http://www.opengis.net/gml" >' +
+                          '<gml:Polygon srsName="EPSG:32188"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>Delta</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs><gml:innerBoundaryIs><gml:LinearRing><gml:coordinates>Omega</gml:coordinates></gml:LinearRing></gml:innerBoundaryIs></gml:Polygon>' +
+                      '</zone>' +
+                  '</layer>' +
+              '</layers>' +
+          '</view>' +
+      '</section>' +
+  '</document>';
 });
