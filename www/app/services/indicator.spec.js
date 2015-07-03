@@ -1,7 +1,7 @@
 
 describe("Indicator service", function() {
     var basePathXml = '/base/lib/xmlDocuments/';
-    var Indicator, $httpBackend, $rootScope, $pouchdb, $q, $injector;
+    var Indicator, $rootScope, $pouchdb, $q, MOCKS;
     var xmlParserMock, localStorageMock;
     var readFileSpy, getStructureSpy, saveStructureSpy;
 
@@ -11,7 +11,7 @@ describe("Indicator service", function() {
             readFileCount: 0,
             readFile: function(url){
                 var defer = $q.defer();
-                defer.resolve(indicatorJsonMock);
+                defer.resolve(MOCKS.structure);
                 return defer.promise;
             },
             loadFile: function(url){
@@ -24,11 +24,11 @@ describe("Indicator service", function() {
                 switch(xmlParserMock.readFileCount){
                     case 0:
                         xmlParserMock.readFileCount ++;
-                        defer.resolve(sampleIndicatorStatic);
+                        defer.resolve(MOCKS.indicatorStatic);
                     break;
                     case 1:
                         xmlParserMock.readFileCount = 0;
-                        defer.resolve(sampleIndicatorValue);
+                        defer.resolve(MOCKS.indicatorValue);
                     break;
                 }
                 return defer.promise;
@@ -41,7 +41,7 @@ describe("Indicator service", function() {
             getStructure: function(){
                 var defer = $q.defer();
                 if(localStorageMock.isStructureCached)
-                    defer.resolve(indicatorJsonMock);
+                    defer.resolve(MOCKS.structure);
                 else
                     defer.reject({name: 'not_found'});
                 return defer.promise;
@@ -52,7 +52,7 @@ describe("Indicator service", function() {
             getIndicator: function(){
                 var defer = $q.defer();
                 if(localStorageMock.isIndicatorCached)
-                    defer.resolve(sampleIndicator);
+                    defer.resolve(MOCKS.indicator);
                 else
                     defer.reject({name: 'not_found'});
                 return defer.promise;
@@ -71,10 +71,11 @@ describe("Indicator service", function() {
         saveStructureSpy = spyOn(localStorageMock, 'saveStructure').and.callThrough();
     }));
 
-    beforeEach(inject(function(_$q_, _$rootScope_, _Indicator_) {
+    beforeEach(inject(function(_$q_, _$rootScope_, _Indicator_, _MOCKS_) {
         $q = _$q_;
         $rootScope = _$rootScope_;
         Indicator = _Indicator_;
+        MOCKS = _MOCKS_;
     }));
 
     it('should list the categories', function(done){
@@ -170,132 +171,4 @@ describe("Indicator service", function() {
         $rootScope.$digest();
     });
 
-
-    //Mocked return objects
-    var indicatorJsonMock = {
-        category: [{
-            id: 'activity_sector',
-            label: "Emplois par secteur d'activité",
-            indicator: [{
-                id: 'primary',
-                label: 'Primaire',
-                version: "1.0",
-                url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml"
-            }, {
-                id: 'secondary',
-                label: 'Secondaire',
-                version: "1.0",
-                url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_2_2011.xml"
-            }]
-        },{
-            id: 'competency_level',
-            label: 'Emplois par niveau de compétence',
-            indicator: [{
-                id: 'something',
-                label: 'Else',
-                version: "1.0",
-                url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml"
-            }]
-        }],
-        geometry: {
-            id: "cdq",
-            label: "Centre-du-Québec",
-            version: "1.0"
-        }
-    };
-
-    var sampleIndicatorSummary = {
-        id: 'something',
-        label: 'Else',
-        version: "1.0",
-        url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml"
-    };
-
-
-    var sampleIndicatorStatic = {
-        name: 'primary',
-        description: 'This is a description',
-        param: [{
-            name: 'men',
-            type: 'Integer',
-            content: 'Number of men in the region'
-        },{
-            name: 'women',
-            type: 'Integer',
-            content: 'Number of women in the region'
-        }],
-        legend: [{
-            for: "map",
-            item: [{
-                min: '0',
-                max: '100',
-                color: 'yellow',
-                content: '0 à 100'
-            },{
-                min: '101',
-                max: '200',
-                color: 'red',
-                content: '101 à 200'
-            }]
-        }],
-        version: {
-            date: '10/20/2012',
-            content: '1.0'
-        }
-    };
-
-    var sampleIndicatorValue = {
-        value: [{
-            z: 'z0',
-            men: '100',
-            women: '200'
-        },{
-            z: 'z1',
-            men: '200',
-            women: '100'
-        }],
-    };
-
-    var sampleIndicator = {
-        name: 'primary',
-        description: 'This is a description',
-        label: 'Primaire',
-        url: "http://108.163.190.66/prototype/atlas_eq_2015/engine_data/emplois/2011/s_a_t_1_2011.xml",
-        param: [{
-            name: 'men',
-            type: 'Integer',
-            content: 'Number of men in the region'
-        },{
-            name: 'women',
-            type: 'Integer',
-            content: 'Number of women in the region'
-        }],
-        value: [{
-            z: 'z0',
-            men: '100',
-            women: '200'
-        },{
-            z: 'z1',
-            men: '200',
-            women: '100'
-        }],
-        legend: [{
-            for: "map",
-            item: [{
-                min: '0',
-                max: '100',
-                color: 'yellow',
-                content: '0 à 100'
-            },{
-                min: '101',
-                max: '200',
-                color: 'red',
-                content: '101 à 200'
-            }]
-        }],
-        version: {
-            date: '10/20/2012',
-            content: '1.0'
-        }
-    }
 });

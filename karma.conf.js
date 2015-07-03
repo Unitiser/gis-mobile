@@ -24,13 +24,10 @@ module.exports = function(config) {
       'lib/lodash/lodash.js',
       'lib/proj4/dist/proj4.js',
       'lib/pouchdb/dist/pouchdb.js',
-      'app/app.mock.js',
+      'app/mocks/app.mock.js',
       'app/config.js',
-      'app/components/xmlparser/xmlparser.service.js',
-      'app/components/pouchdb/pouchdb.service.js',
-      'app/services/indicator.service.js',
-      'app/services/localstorage.service.js',
-      'app/services/geometry.service.js',
+      'app/components/**/*.service.js',
+      'app/services/*.service.js',
       {pattern: 'app/**/*.spec.js'}
       // {pattern: 'lib/xmlDocuments/*.xml', included: false, served: true}
     ],
