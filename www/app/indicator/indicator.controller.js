@@ -1,4 +1,4 @@
-angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, data, Geometry){
+angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, Geometry){
     var tabTitles = {
         map : 'Carte',
         graph : 'Graphique',
@@ -47,63 +47,41 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
             data: []
-        }
-        ]
+        }]
     };
 
 
     $scope.setTab = function(tab){
         $scope.tab = tab;
-        $ionicNavBarDelegate.title(indicator.label + " - " + tabTitles[tab]);
+        if(indicator)
+            $ionicNavBarDelegate.title(indicator.label + " - " + tabTitles[tab]);
+        else{
+            $scope.getData().then(function(){
+                $ionicNavBarDelegate.title(indicator.label + " - " + tabTitles[tab]);
+            });
+        }
     }
 
     $scope.getData = function(){
-        Indicator.get($state.params.id)
+        return Indicator.get($state.params.id)
         .then(function(ind){
             console.log(ind);
             indicator = ind;
             return Geometry.get();
         }).then(function(geo){
             geometry = geo;
-            
-            $scope.init['map']();
-
-            $scope.setTab('map');
-
+            _.each(geometry.domainSet.MultiSurface, addZone);
         });
     }
 
     $scope.init = {
         map: function(){
             console.log('Initializing map');
-            
             //Load leaflet
             map = L.map('gis-map', { zoomControl:false }).setView([45.88451167585413, -72.50152587890625], 10);
-            
             // add an OpenStreetMap tile layer
-            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             map.attributionControl.setPrefix('');
-            console.log(geometry);
-            _.each(geometry.domainSet.MultiSurface, function(zone){
-                console.log(zone);
-                for (var i = zone.Polygon.length - 1; i >= 0; i--) {
-                    var polygon = []
-                    polygon.push(zone.Polygon[i].exterior.posList.content);
-                    if(zone.Polygon[i].interior){
-                        for (var j = zone.Polygon[i].interior.length - 1; j >= 0; j--) {
-                            polygon.push(zone.Polygon[i].interior[j].posList.content);
-                        };
-                    }
-                    // console.log(polygon);
-                    map.addLayer(new L.Polygon(polygon),{
-                        fill: true,
-                        fillOpacity: 0.6,
-                        color: 'black',
-                        // fillColor: getColor(region.total, legend),
-                        weight: 1
-                    });
-                };
-            });
         },
         graph: function(){
 
@@ -137,53 +115,59 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
 
         $scope.barTotalData.labels.push(region.label);
         $scope.barTotalData.datasets[0].data.push(region.total);
+    }
 
-        for (var i = region.polygon.length - 1; i >= 0; i--) {
-            var polygon = new L.Polygon(region.polygon[i], {
+    function addZone(zone){
+        //Get indicator info and map legend
+        var legend = _.find(indicator.legend, { for: 'map'} );
+        var zoneValues = _.find(indicator.value, { z : zone.id});
+        
+        //Add zone to data table
+        $scope.regions.push({
+            label: zone.name.content,
+            men: zoneValues.men,
+            women: zoneValues.women
+        });
+
+        //Build popup message
+        var popupMsg = zone.name.content + '<br/>';
+        for (var i = indicator.param.length - 1; i >= 0; i--) {
+            popupMsg += indicator.param[i].content + " : " + zoneValues[indicator.param[i].name] + " ";
+        };
+        popupMsg += '<br/>' + 'Description : ' + zone.description.content;
+
+        //Add zone polygons
+        for (var i = zone.Polygon.length - 1; i >= 0; i--) {
+            var polygon = []
+            polygon.push(zone.Polygon[i].exterior.posList.content);
+            
+            if(zone.Polygon[i].interior){
+                for (var j = zone.Polygon[i].interior.length - 1; j >= 0; j--) {
+                    polygon.push(zone.Polygon[i].interior[j].posList.content);
+                };
+            }
+
+            var leafPoly = new L.Polygon(polygon,{
                 fill: true,
                 fillOpacity: 0.6,
                 color: 'black',
-                fillColor: getColor(region.total, legend),
+                fillColor: getColor(zoneValues[legend.value], legend),
                 weight: 1
             });
-            var popupMsg = region.label + "<br/> Homme: " + region.men + " Femme: " + region.women + " Total: " + region.total;
-            polygon.bindPopup(popupMsg);
-            map.addLayer( polygon);
+            leafPoly.bindPopup(popupMsg);
+            map.addLayer(leafPoly);
         };
     }
 
 
     function getColor(value, legend){
-        for(var i = 0; i < legend.length; i++){
-            if((value * 1) >= legend[i].min &&
-                (value * 1) < legend[i].max ){
-                return legend[i].color.replace('0x', '#');
+        for(var i = 0; i < legend.item.length; i++){
+            if((value * 1) >= legend.item[i].min &&
+                (value * 1) < legend.item[i].max ){
+                return legend.item[i].color.replace('0x', '#');
             }
         }
     }
 
-    $scope.getData();
-    // $scope.setTab('map');
+    $scope.setTab('map');
 });
-
-// data = {
-//     labels: ["January", "February", "March", "April", "May", "June", "July"],
-//     datasets: [
-//         {
-//             label: "My First dataset",
-//             fillColor: "rgba(220,220,220,0.5)",
-//             strokeColor: "rgba(220,220,220,0.8)",
-//             highlightFill: "rgba(220,220,220,0.75)",
-//             highlightStroke: "rgba(220,220,220,1)",
-//             data: [65, 59, 80, 81, 56, 55, 40]
-//         },
-//         {
-//             label: "My Second dataset",
-//             fillColor: "rgba(151,187,205,0.5)",
-//             strokeColor: "rgba(151,187,205,0.8)",
-//             highlightFill: "rgba(151,187,205,0.75)",
-//             highlightStroke: "rgba(151,187,205,1)",
-//             data: [28, 48, 40, 19, 86, 27, 90]
-//         }
-//     ]
-// };
