@@ -1,6 +1,6 @@
 angular.module('gisMobile')
 //URL to fetch the structure document
-.constant('STRUCTURE_URL', '/lib/xmlDocuments/structure.xml')
+.constant('STRUCTURE_URL', 'lib/xmlDocuments/structure.xml')
 
 //Name of the NoSQL database that will be used localy
 .constant('LOCAL_DB_NAME', 'gisMobile')
