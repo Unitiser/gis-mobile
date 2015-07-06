@@ -60,7 +60,23 @@ describe("pouchdb service", function() {
         forceDigest();
     });
 
-    function forceDigest(){
-        setTimeout(function() { $rootScope.$digest(); }, 50);
+    it('should be able to remove a document', function(done){
+        $pouchdb.openDatabase('supertest');
+        $pouchdb.put(sampleDoc)
+        .then(function(res){
+            forceDigest();
+            return $pouchdb.remove('something');
+        })
+        .then(function(res){
+            forceDigest();
+            return $pouchdb.get('something');
+        })
+        .catch(function(e){ expect(e.name).toBe('not_found'); done(); });
+        forceDigest();
+    });
+
+    function forceDigest(time){
+        if(!time) time = 50;
+        setTimeout(function() { $rootScope.$digest(); }, time);
     }
 });

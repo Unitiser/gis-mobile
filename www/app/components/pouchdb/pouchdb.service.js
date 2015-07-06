@@ -6,7 +6,7 @@ angular.module('gis.pouchdb', [])
     //Open the database and return the information
     function openDatabase(name){
         dbName = name;
-        db = new PouchDB(dbName);
+        db = new PouchDB(dbName, {adapter : 'websql'});
         return $q.when(db.info())
     }
 
@@ -30,10 +30,18 @@ angular.module('gis.pouchdb', [])
         return $q.when(db.get(id));
     }
 
+    //Delete a doc from the db
+    function remove(id){
+        return $q.when(db.get(id).then(function(doc){
+            return db.remove(doc);
+        }));
+    }
+
     return {
         openDatabase: openDatabase,
         put: put,
         get: get,
+        remove: remove,
         resetDatabase: resetDatabase
     }
 });
