@@ -37,6 +37,15 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
         return $pouchdb.get('geometry')
     }
 
+    //Flush geometry
+    function flushGeometry(){
+        return $pouchdb.remove('geometry');
+    }
+
+    function reset(){
+        $pouchdb.resetDatabase();
+    }
+
     init();
     return {
         saveStructure: saveStructure,
@@ -44,6 +53,8 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
         getIndicator: getIndicator,
         saveIndicator: saveIndicator,
         getGeometry: getGeometry,
-        saveGeometry: saveGeometry
+        saveGeometry: saveGeometry,
+        flushGeometry: flushGeometry,
+        reset: reset
     }
 });

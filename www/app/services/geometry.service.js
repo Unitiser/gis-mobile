@@ -83,8 +83,14 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
         .catch(function(e){ return false; });
     }
 
+    //Flush the cached version
+    function flush(){
+        return localStorage.flushGeometry();
+    }
+
     return {
         get: get,
-        validate : validate
+        validate : validate,
+        flush: flush
     }
 });

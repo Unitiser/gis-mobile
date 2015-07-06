@@ -38,6 +38,12 @@ describe('Geometry service', function(){
             },
             saveStructure: function(){
                 localStorageMock.isStructureCached = true;
+            },
+            flushGeometry: function(){
+                var defer = $q.defer();
+                localStorage.isGeometryCached = false;
+                defer.resolve();
+                return defer.promise;
             }
         };
 
@@ -78,7 +84,6 @@ describe('Geometry service', function(){
         expect(readFileSpy.calls.count()).toBe(0);
     });
 
-    // it('should be able to change projection');
     it('should validate the cached version against the structure document', function(done){
         localStorageMock.isGeometryCached = true;
         localStorageMock.isStructureCached = true;
@@ -89,4 +94,13 @@ describe('Geometry service', function(){
         });
         $rootScope.$digest();
     });
+
+    it('should flush the cache', function(done){
+        Geometry.flush()
+        .then(function(){
+            expect(localStorageMock.isGeometryCached).toBe(false);
+            done();
+        });
+        $rootScope.$digest();
+    })
 });

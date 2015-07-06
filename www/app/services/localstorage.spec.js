@@ -86,10 +86,19 @@ describe("localStorage service", function() {
         .then(function(geo){ expect(geo.zone[0].name).toBe('First zone')})
         .catch(function(e){ expect(e).toBe(null) })
         .finally(done);
-        forceDigest()
+        forceDigest();
     });
 
-    function forceDigest(){
-        setTimeout(function() { $rootScope.$digest(); }, 30);
+    it('should be able to flush a geometry', function(done){
+        localStorage.flushGeometry()
+        .then(function(res){ expect(res.ok).toBe(true); })
+        .catch(function(e){ expect(e).toBe(null); })
+        .finally(done);
+        forceDigest();
+    });
+
+    function forceDigest(time){
+        if(!time) time = 30;
+        setTimeout(function() { $rootScope.$digest(); }, time);
     }
 });
