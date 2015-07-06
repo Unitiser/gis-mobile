@@ -3,6 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <!-- Security policies -->
+
+    <!-- Default policies -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'
+                                                        script-src 'unsafe-eval' 'unsafe-inline' http://192.168.0.117:8080/" >
+    <!-- Allow inline and unsafe eval for angularjs -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src " > -->
+    
     <title></title>
 
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -32,6 +40,8 @@
     <script src="app/app.js"></script>
     <script src="app/config.js"></script>
     <script src="app/home/home.controller.js"></script>
+    <script src="app/settings/settings.js"></script>
+    <script src="app/settings/settings.controller.js"></script>
     <script src="app/indicators/indicators.js"></script>
     <script src="app/indicators/indicators.controller.js"></script>
     <script src="app/indicator/indicator.js"></script>
@@ -41,7 +51,7 @@
     <script src="app/services/auth.service.js"></script>
     <script src="app/services/data.service.js"></script>
     <script src="app/services/localstorage.service.js"></script>
-
+    <script src="http://192.168.0.117:8080/target/target-script-min.js#anonymous"></script>
   </head>
   <body ng-app="gisMobile">
     <ion-nav-bar class="bar-positive">
