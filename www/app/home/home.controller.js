@@ -1,10 +1,41 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Auth, $http){
+angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Geometry, Auth, $http){
+    //Load the external data during the splash screen
+    $scope.$on('$ionicView.loaded', function() {
+      ionic.Platform.ready( function() {
+        Indicator.getCategories()
+        .then(function(cats){
+            $scope.items = cats;
+            $scope.items.push({
+                name: 'Paramètres',
+                icon: 'ion-gear-b',
+                link: '/settings'
+            });
+
+            if(navigator && navigator.splashscreen) 
+                navigator.splashscreen.hide();
+
+            //Preload geometry
+            Geometry.validate()
+            .then(function(isValid){
+                    if(!isValid)
+                        Geometry.flush() //Flush the cache and reload
+                        .then(function(){ Geometry.get(); });
+                }
+            });
+            Geometry.get();
+        });
+        
+      });
+    });
+
+
     Indicator.getCategories()
     .then(function(cats){
         $scope.items = cats;
         $scope.items.push({
             name: 'Paramètres',
-            icon: 'ion-gear-b'
+            icon: 'ion-gear-b',
+            link: '/settings'
         });
     });
 
