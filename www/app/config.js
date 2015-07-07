@@ -55,5 +55,7 @@ angular.module('gisMobile')
 
 //Set logger level
 .run(function(){
+    Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
+    Logger.get('Geometry').setLevel(Logger.DEBUG);
 });
