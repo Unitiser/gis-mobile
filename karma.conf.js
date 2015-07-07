@@ -1,7 +1,14 @@
 // Karma configuration
 // Generated on Mon Jun 15 2015 11:23:49 GMT-0400 (EDT)
+var mainBowerFiles = require('main-bower-files');
+var _ = require('lodash');
+var fs = require('fs');
 
 module.exports = function(config) {
+  //Get bower dependencies
+  var bower = [];
+  _.forEach(mainBowerFiles('**/*.js', { includeDev: true }), function(path){ bower.push(path.replace(__dirname + '/www/', '')); });
+
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -18,19 +25,14 @@ module.exports = function(config) {
     //   {pattern: '*/*.spec.js'}
     // ],
 
-    files: [
-      'lib/angular/angular.js',
-      'lib/angular-mocks/angular-mocks.js',
-      'lib/lodash/lodash.js',
-      'lib/proj4/dist/proj4.js',
-      'lib/pouchdb/dist/pouchdb.js',
+    files: bower.concat([
       'app/mocks/app.mock.js',
       'app/config.js',
-      'app/components/**/*.service.js',
-      'app/services/*.service.js',
-      {pattern: 'app/**/*.spec.js'}
-      // {pattern: 'lib/xmlDocuments/*.xml', included: false, served: true}
-    ],
+      { pattern: 'app/components/**/*.service.js' },
+      { pattern: 'app/services/*.service.js' },
+      { pattern: 'app/**/*.spec.js' }
+    ])
+    ,
     // list of files to exclude
     exclude: [
     ],
