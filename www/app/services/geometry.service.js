@@ -3,15 +3,19 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
     proj4.defs("EPSG:32188","+proj=tmerc +lat_0=0 +lon_0=-73.5 +k=0.9999 +x_0=304800 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     //Destination proj
     proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs ");
-
+    var Log = Logger.get('Geometry');
     //Load geometry
     function load(){
         //Hook posList call back to GEOMETRY_JSON
         GEOMETRY_JSON.domainSet.MultiSurface.Polygon.exterior.posList.callback = processPosList;
         GEOMETRY_JSON.domainSet.MultiSurface.Polygon.interior.posList.callback = processPosList;
 
+        Log.time('Loading geometry');
         return localStorage.getGeometry()
-        .then(function(geo){ //If we can find the geometry object, return it
+        .then(function(geo){
+            Log.timeEnd('Loading geometry');
+            Log.debug('Geometry loaded from cache');
+
             return geo;
         })
         .catch(function(e){ //If not get the url from structure if it exists
@@ -29,6 +33,8 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
             }).then(function(geometry){ // Finally, get geometry from url
                 return xmlparser.readFile(geometry.url, GEOMETRY_JSON)
                 .then(function(geo){
+                    Log.timeEnd('Loading geometry');
+                    Log.debug('Geometry loaded from url');
                     localStorage.saveGeometry(geo);
                     return geo;
                 });
@@ -67,6 +73,8 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
     function validate(){
         var localVersion;
         var structVersion;
+
+        Log.time('Validating geometry version');
         return localStorage
         .getGeometry()
         .then(function(geo){
@@ -77,14 +85,19 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
             })
             .then(function(structure){
                 structVersion = structure.geometry.version;
+                Log.timeEnd('Validating geometry version');
                 return localVersion == structVersion;
             });
         })
-        .catch(function(e){ return false; });
+        .catch(function(e){ 
+            Log.timeEnd('Validating geometry version'); 
+            return false; 
+        });
     }
 
     //Flush the cached version
     function flush(){
+        Log.debug('Flushing geometry cache');
         return localStorage.flushGeometry();
     }
 
