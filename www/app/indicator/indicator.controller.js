@@ -5,6 +5,8 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
         table : 'Tableau'
     }
     var map, indicator, geometry;
+    var Log = Logger.get('IndicatorCtrl');
+
     $scope.regions = [];
     $scope.pieData = [{
             value: 0,
@@ -70,13 +72,15 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             return Geometry.get();
         }).then(function(geo){
             geometry = geo;
+            $scope.legend = _.find(indicator.legend, { for: 'map'} );
+            console.log($scope.legend);
             _.each(geometry.domainSet.MultiSurface, addZone);
         });
     }
 
     $scope.init = {
         map: function(){
-            console.log('Initializing map');
+            Logger.info('Initializing map');
             //Load leaflet
             map = L.map('gis-map', { zoomControl:false }).setView([45.88451167585413, -72.50152587890625], 10);
             // add an OpenStreetMap tile layer
@@ -85,7 +89,7 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
         },
         graph: function(){
 
-            console.log('Initializing graph');
+            Logger.info('Initializing graph');
 
             // var ctx = document.getElementById("pie").getContext("2d");
             // var pieChart = new Chart(ctx).Pie($scope.pieData, {animation: false});
@@ -97,7 +101,7 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             // var barTotalChart = new Chart(ctx2).Bar($scope.barTotalData);
         },
         table: function(){
-            console.log('Initializing table');
+            Logger.info('Initializing table');
         }
     }
 
@@ -119,7 +123,7 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
 
     function addZone(zone){
         //Get indicator info and map legend
-        var legend = _.find(indicator.legend, { for: 'map'} );
+        var legend = $scope.legend;
         var zoneValues = _.find(indicator.value, { z : zone.id});
         
         //Add zone to data table

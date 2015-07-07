@@ -4,9 +4,9 @@
     <div id="legend">
         <ul>
             <li class="legend-title">Légende</li>
-            <li ng-repeat="item in legend">
+            <li ng-repeat="item in legend.item">
                 <span class="legend-icon" style="background-color: {{item.color.replace('0x', '#')}};"></span>
-                {{item.label}}
+                {{item.content}}
             </li>
         </ul>
     </div>
