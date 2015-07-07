@@ -51,4 +51,9 @@ angular.module('gisMobile')
     version: {
         attrs: ['date', '$content']
     }
+})
+
+//Set logger level
+.run(function(){
+    Logger.setLevel(Logger.DEBUG);
 });
