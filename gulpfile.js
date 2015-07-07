@@ -82,7 +82,7 @@ gulp.task('inject', function(){
                  "css/style.css"];
   var sources = gulp.src(jsFiles.concat(cssFile), {read: false, cwd: './www/'});
  
-  return target.pipe(inject(sources))
+  return target.pipe(inject(sources, {addRootSlash: false}))
     .pipe(gulp.dest('./www/'));
 });
 
