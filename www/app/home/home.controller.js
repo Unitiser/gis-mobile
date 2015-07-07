@@ -17,10 +17,9 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, G
             //Preload geometry
             Geometry.validate()
             .then(function(isValid){
-                    if(!isValid)
-                        Geometry.flush() //Flush the cache and reload
-                        .then(function(){ Geometry.get(); });
-                }
+                if(!isValid)
+                    Geometry.flush() //Flush the cache and reload
+                    .then(function(){ Geometry.get(); });
             });
             Geometry.get();
         });
