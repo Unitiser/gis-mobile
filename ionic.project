@@ -3,6 +3,8 @@
   "app_id": "3d56a21a",
   "gulpStartupTasks": [
     "sass",
+    "wiredep",
+    "inject",
     "watch"
   ],
   "proxies": [
