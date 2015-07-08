@@ -41,11 +41,11 @@ angular
         param: [{
             name: 'men',
             type: 'Integer',
-            content: 'Number of men in the region'
+            content: 'Hommes'
         },{
             name: 'women',
             type: 'Integer',
-            content: 'Number of women in the region'
+            content: 'Femmes'
         }],
         value: [{
             z: 'z0',
@@ -89,11 +89,11 @@ angular
         param: [{
             name: 'men',
             type: 'Integer',
-            content: 'Number of men in the region'
+            content: 'Hommes'
         },{
             name: 'women',
             type: 'Integer',
-            content: 'Number of women in the region'
+            content: 'Femmes'
         }],
         legend: [{
             for: "map",
@@ -128,15 +128,25 @@ angular
     },
 
     geometry : {
-        zone: [{
-            id: 'z0',
-            name: 'First zone',
-            description: 'Something',
-            Polygon: {
-                exterior: { posList: '20 30, 30 40, 40 20, ...' },
-                interior: [{ posList: '...' }, { posList: '...' }]
-            }
-        }],
+        domainSet: {
+            MultiSurface: [{
+                id: 'z0',
+                name: { content: 'First zone' },
+                description: {content: 'Something'},
+                Polygon: {
+                    exterior: { posList: '20 30, 30 40, 40 20, ...' },
+                    interior: [{ posList: '...' }, { posList: '...' }]
+                }
+            },{
+                id: 'z1',
+                name: { content: 'Seccond zone' },
+                description: { content: 'Something' },
+                Polygon: {
+                    exterior: { posList: '20 30, 30 40, 40 20, ...' },
+                    interior: [{ posList: '...' }, { posList: '...' }]
+                }
+            }]
+        },
         version: {
             date: '20/10/2012',
             content: '1.0'
@@ -152,6 +162,23 @@ angular
         },{
             color: "#000000",
             content: "Femmes"
+        }]
+    },
+    legendBar: {
+        values: "men,women",
+        for: "barChart",
+        item: [{
+            min: '0',
+            max: '99',
+            color: '#00FF00'
+        },{
+            min: '100',
+            max: '199',
+            color: '#FFFF00'
+        },{
+            min: '200',
+            max: '999',
+            color: '#FF0000'
         }]
     }
 });

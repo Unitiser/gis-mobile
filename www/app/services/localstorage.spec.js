@@ -83,7 +83,7 @@ describe("localStorage service", function() {
 
     it('should be able to get a geometry', function(done){
         localStorage.getGeometry()
-        .then(function(geo){ expect(geo.zone[0].name).toBe('First zone')})
+        .then(function(geo){ expect(geo.version.content).toBe('1.0')})
         .catch(function(e){ expect(e).toBe(null) })
         .finally(done);
         forceDigest();

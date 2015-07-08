@@ -1,4 +1,4 @@
-angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, Geometry){
+angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, Indicator, Geometry, Graph){
     var tabTitles = {
         map : 'Carte',
         graph : 'Graphique',
@@ -8,37 +8,6 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
     var Log = Logger.get('IndicatorCtrl');
 
     $scope.regions = [];
-    $scope.pieData = [{
-            value: 0,
-            label: "Homme",
-            color: '#1976d2',
-            highlight: '#1565c0'
-        },{
-            value: 0,
-            label: "Femme",
-            color: '#ef5350',
-            highlight: '#f44336'
-        }];
-    $scope.barData = {
-        labels: [],
-        datasets: [{
-            label: "Homme",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
-            data: []
-        },{
-            label: "Femme",
-            fillColor: "rgba(151,187,205,0.5)",
-            strokeColor: "rgba(151,187,205,0.8)",
-            highlightFill: "rgba(151,187,205,0.75)",
-            highlightStroke: "rgba(151,187,205,1)",
-            data: []
-        }
-
-        ]
-    };
 
     $scope.barTotalData = {
         labels: [],
@@ -91,11 +60,11 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
 
             Logger.info('Initializing graph');
 
-            // var ctx = document.getElementById("pie").getContext("2d");
-            // var pieChart = new Chart(ctx).Pie($scope.pieData, {animation: false});
+            var ctx = document.getElementById("pie").getContext("2d");
+            var pieChart = new Chart(ctx).Pie(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'pieChart'})), {legend : true, animation: false});
 
-            // var ctx1 = document.getElementById("bar").getContext("2d");
-            // var barChart = new Chart(ctx1).Bar($scope.barData);
+            var ctx1 = document.getElementById("bar").getContext("2d");
+            var barChart = new Chart(ctx1).Bar(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'barChart'})), {legend : true, animation: false});
 
             // var ctx2 = document.getElementById("barTotal").getContext("2d");
             // var barTotalChart = new Chart(ctx2).Bar($scope.barTotalData);

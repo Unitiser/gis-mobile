@@ -9,35 +9,22 @@ describe('Graph service', function(){
     }));
 
     it('should format the data for a pieChart', function(){
-        var config = Graph.getConfig(MOCKS.indicator, MOCKS.geography, MOCKS.legendPie);
+        var config = Graph.getConfig(MOCKS.indicator, MOCKS.geometry, MOCKS.legendPie);
         expect(config.length).toBe(2);
-        expect(config.label).toExist();
-        expect(config.value).toBe(300);
+        expect(config[1].label).toBe('Hommes');
+        expect(config[1].value).toBe(300);
+        expect(config[1].color).toBe('#FFFFFF');
     });
-    it('should format the data for a barChart');
+
+    it('should format the data for a barChart', function(){
+        var config = Graph.getConfig(MOCKS.indicator, MOCKS.geometry, MOCKS.legendBar);
+        expect(config.labels.length).toBe(2);
+        expect(config.datasets.length).toBe(2);
+        expect(config.datasets[0].label).toBe('Hommes');
+        expect(config.datasets[0].fillColor.length).toBe(2);
+        expect(config.datasets[0].fillColor[0]).toBe('#FFFF00');
+        expect(config.datasets[0].data.length).toBe(2);
+    });
+
     it('should format the data for a totalChart');
 });
-
-// $scope.pieData = [{
-//     value: 0,
-//     label: "Homme",
-//     color: '#1976d2',
-//     highlight: '#1565c0'
-// },{
-//     value: 0,
-//     label: "Femme",
-//     color: '#ef5350',
-//     highlight: '#f44336'
-// }];
-
-// legendPie : {
-//     values: "men,women",
-//     for: "pieChart",
-//     item: [{
-//         color: "#FFFFFF",
-//         content: "Hommes"
-//     },{
-//         color: "#000000",
-//         content: "Femmes"
-//     }]
-// }
