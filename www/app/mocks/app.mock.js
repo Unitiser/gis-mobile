@@ -168,17 +168,35 @@ angular
         values: "men,women",
         for: "barChart",
         item: [{
-            min: '0',
-            max: '99',
-            color: '#00FF00'
+            color: '#FFFFFF',
+            content: 'Hommes'
         },{
-            min: '100',
-            max: '199',
-            color: '#FFFF00'
+            color: '#000000',
+            content: 'Femmes'
         },{
             min: '200',
             max: '999',
             color: '#FF0000'
+        }]
+    },
+    legendTotal : {
+        values: "men,women",
+        for: "totalBarChart",
+        item: [{
+            min: '0',
+            max: '100',
+            color: '#00FF00',
+            content: '0 à 100'
+        },{
+            min: '101',
+            max: '200',
+            color: '#FFFF00',
+            content: '101 à 200'
+        },{
+            min: '201',
+            max: '999',
+            color: '#FF0000',
+            content: '201 et plus'
         }]
     }
 });

@@ -10,6 +10,7 @@ angular.module('gisMobile').service('Graph', function($q){
                 return getBarChartConfig(indicator, geometry, legend);
             break;
             case 'totalBarChart':
+                return getTotalBarChartConfig(indicator, geometry, legend);
             break;
         }        
     }
@@ -46,42 +47,61 @@ angular.module('gisMobile').service('Graph', function($q){
             labels: [],
             datasets: []
         }
-        var colors = {};
         var data = {};
-        // var highlights = {};
         
         _.forEach(indicator.value, function(val){
             config.labels.push( _.find(geometry.domainSet.MultiSurface, {id: val.z}).name.content );
             
             for (var i = params.length - 1; i >= 0; i--) {
-                if(!colors[params[i]]) colors[params[i]] = [];
-                if(!highlights[params[i]]) highlights[params[i]] = [];
                 if(!data[params[i]]) data[params[i]] = [];
-
-                var color = getColor(val[params[i]], legend);
-                colors[params[i]].push(color);
-                // highlights[params[i]].push(darken(color));
 
                 data[params[i]].push(val[params[i]]);
             };
         });
 
         //build datasets
-        _.forEach(params, function(param){
+        _.forEach(params, function(param, index){
             config.datasets.push({
-                label: _.find(indicator.param, {name: param}).content,
-                fillColor: colors[param],
-                strokeColor: colors[param],
-                // highlightFill: highlights[param],
-                // highlightStroke: highlights[param],
+                label: legend.item[index].content,
+                fillColor: legend.item[index].color,
+                strokeColor: legend.item[index].color,
                 data: data[param]
             });
         });
         return config;
     }
 
-    function getTotalBarChartConfig(){
+    function getTotalBarChartConfig(indicator, geometry, legend){
+        var params = legend.values.split(',');
+        var config = {
+            labels: [],
+            datasets: []
+        }
+        var colors = [];
+        var data = [];
+        
+        _.forEach(indicator.value, function(val){
+            var total = 0;
+            config.labels.push( _.find(geometry.domainSet.MultiSurface, {id: val.z}).name.content );
+            
+            for (var i = params.length - 1; i >= 0; i--) {
+                total += (val[params[i]] * 1);
+            };
+            var color = getColor(total, legend);
+            
+            colors.push(color);
+            data.push(total);
+        });
 
+        //build dataset
+        config.datasets.push({
+            label: 'Total',
+            fillColor: colors,
+            strokeColor: colors,
+            data: data
+        });
+
+        return config;
     }
 
 

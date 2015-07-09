@@ -21,10 +21,16 @@ describe('Graph service', function(){
         expect(config.labels.length).toBe(2);
         expect(config.datasets.length).toBe(2);
         expect(config.datasets[0].label).toBe('Hommes');
-        expect(config.datasets[0].fillColor.length).toBe(2);
-        expect(config.datasets[0].fillColor[0]).toBe('#FFFF00');
+        expect(config.datasets[0].fillColor).toBe('#FFFFFF');
         expect(config.datasets[0].data.length).toBe(2);
     });
 
-    it('should format the data for a totalChart');
+    it('should format the data for a totalBarChart', function(){
+        var config  = Graph.getConfig(MOCKS.indicator, MOCKS.geometry, MOCKS.legendTotal);
+        expect(config.labels.length).toBe(2);
+        expect(config.datasets.length).toBe(1);
+        expect(config.datasets[0].label).toBe('Total');
+        expect(config.datasets[0].fillColor.length).toBe(2);
+        expect(config.datasets[0].data.length).toBe(2);
+    });
 });

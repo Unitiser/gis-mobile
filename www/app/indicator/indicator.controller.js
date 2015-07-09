@@ -66,8 +66,8 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             var ctx1 = document.getElementById("bar").getContext("2d");
             var barChart = new Chart(ctx1).Bar(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'barChart'})), {legend : true, animation: false});
 
-            // var ctx2 = document.getElementById("barTotal").getContext("2d");
-            // var barTotalChart = new Chart(ctx2).Bar($scope.barTotalData);
+            var ctx2 = document.getElementById("barTotal").getContext("2d");
+            var barTotalChart = new Chart(ctx2).Bar(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'totalBarChart'})), {legend : true, animation: false});
         },
         table: function(){
             Logger.info('Initializing table');
