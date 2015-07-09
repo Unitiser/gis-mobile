@@ -32,8 +32,8 @@ angular.module('gisMobile').service('Graph', function($q){
             config.push({
                 value: totals[params[i]],
                 label: legend.item[i].content,
-                color: legend.item[i].color,
-                highlight: darken(legend.item[i].color)
+                color: legend.item[i].color
+                // highlight: darken(legend.item[i].color)
             });
         };
 
@@ -48,7 +48,7 @@ angular.module('gisMobile').service('Graph', function($q){
         }
         var colors = {};
         var data = {};
-        var highlights = {};
+        // var highlights = {};
         
         _.forEach(indicator.value, function(val){
             config.labels.push( _.find(geometry.domainSet.MultiSurface, {id: val.z}).name.content );
@@ -60,7 +60,7 @@ angular.module('gisMobile').service('Graph', function($q){
 
                 var color = getColor(val[params[i]], legend);
                 colors[params[i]].push(color);
-                highlights[params[i]].push(darken(color));
+                // highlights[params[i]].push(darken(color));
 
                 data[params[i]].push(val[params[i]]);
             };
@@ -72,8 +72,8 @@ angular.module('gisMobile').service('Graph', function($q){
                 label: _.find(indicator.param, {name: param}).content,
                 fillColor: colors[param],
                 strokeColor: colors[param],
-                highlightFill: highlights[param],
-                highlightStroke: highlights[param],
+                // highlightFill: highlights[param],
+                // highlightStroke: highlights[param],
                 data: data[param]
             });
         });
