@@ -1,9 +1,7 @@
-angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser, STRUCTURE_URL, STRUCTURE_JSON, GEOMETRY_JSON){
-    //Source proj
-    proj4.defs("EPSG:32188","+proj=tmerc +lat_0=0 +lon_0=-73.5 +k=0.9999 +x_0=304800 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
-    //Destination proj
-    proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs ");
+angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser, STRUCTURE_URL, STRUCTURE_JSON, GEOMETRY_JSON, PROJECTIONS, LEAF_PROJ){
+
     var Log = Logger.get('Geometry');
+    var projSystem;
     //Load geometry
     function load(){
         //Hook posList call back to GEOMETRY_JSON
@@ -43,8 +41,8 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
     }
     
     //Change projection
-    function changeProjection(point){
-        return proj4('EPSG:32188','EPSG:4326', point);
+    function changeProjection(srcProj, point){
+        return proj4(srcProj, LEAF_PROJ, point);
     }
 
     //Convert into leaflet poin
@@ -57,7 +55,7 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
         var rawPos = posListNode.content.trim().split(' ');
         var result = [];
         for (var i = rawPos.length - 1; i >= 0; i--) {
-            result.push(toLeafletPoint(changeProjection(rawPos[i].split(','))));
+            result.push(toLeafletPoint(changeProjection("EPSG:32188", rawPos[i].split(','))));
         };
         // console.log(result);
         posListNode.content = result;
@@ -101,9 +99,19 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
         return localStorage.flushGeometry();
     }
 
+    function defineProjections(){
+        _.forEach(PROJECTIONS, function(proj, index){
+            proj4.defs(proj.name, proj.definition);
+        })
+    }
+
+    //Init everything
+    defineProjections();
+
     return {
         get: get,
         validate : validate,
-        flush: flush
+        flush: flush,
+        changeProjection: changeProjection
     }
 });

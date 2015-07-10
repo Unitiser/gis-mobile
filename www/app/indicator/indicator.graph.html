@@ -1,18 +1,5 @@
 <ion-view view-title="IndicatorId - Graph">
-  <ion-content class="padding has-footer has-header">
-    <h3>Total homme/femme du secteur</h3>
-    <div class="pieWrap">
-        <canvas id="pie" height="400"></canvas>
-    </div>
-    
-    <h3>Homme/femme par région</h3>
-    <ion-scroll class="barGraphWrap" zooming="true" direction="x">
-        <canvas id="bar" width="1000" height="400"></canvas>
-    </ion-scroll>
-    
-    <h3>Total par région</h3>
-    <ion-scroll zooming="true" direction="x">
-        <canvas id="barTotal" width="1000" height="400"></canvas>
-    </ion-scroll>
+  <ion-content class="padding has-footer has-header" overflow-scroll="true">
+    <gis-chart ng-repeat="chart in charts" title="chart.title" for="chart.for" data="chart.data"></gis-graph>
   </ion-content>
 </ion-view>

@@ -5,6 +5,18 @@ angular.module('gisMobile')
 //Name of the NoSQL database that will be used localy
 .constant('LOCAL_DB_NAME', 'gisMobile')
 
+//Known projection systems
+.constant('PROJECTIONS', [{
+    name: "EPSG:32188",
+    definition: "+proj=tmerc +lat_0=0 +lon_0=-73.5 +k=0.9999 +x_0=304800 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+},{
+    name: "EPSG:4326",
+    definition: "+proj=longlat +datum=WGS84 +no_defs"
+}])
+
+//Leaflet projection system
+.constant('LEAF_PROJ', "EPSG:4326")
+
 //JSON object to extract data from the structure document
 .constant('STRUCTURE_JSON', {
     category : {
@@ -23,6 +35,10 @@ angular.module('gisMobile')
     name: { attrs: ['$content'] },
     description: { attrs: ['$content'] },
     param: {attrs: ['name', 'type', '$content'] },
+    marker: {
+        attrs: ['srcName'],
+        item: { attrs: ['label', '$content'] }
+    },
     legend: {
         attrs: ['value', 'values', 'for', 'title', '$isArray'],
         item: { attrs: ['min','max','color','$content'] }
@@ -34,7 +50,7 @@ angular.module('gisMobile')
 .constant('GEOMETRY_JSON', {
     domainSet: {
         MultiSurface: {
-            attrs: ['id'],
+            attrs: ['id', 'srcName'],
             name: { attrs: ['$content'] },
             description: { attrs: ['$content'] },
             Polygon: {

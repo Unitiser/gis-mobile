@@ -9,19 +9,6 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
 
     $scope.regions = [];
 
-    $scope.barTotalData = {
-        labels: [],
-        datasets: [{
-            label: "Total",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
-            data: []
-        }]
-    };
-
-
     $scope.setTab = function(tab){
         $scope.tab = tab;
         if(indicator)
@@ -44,6 +31,7 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             $scope.legend = _.find(indicator.legend, { for: 'map'} );
             console.log($scope.legend);
             _.each(geometry.domainSet.MultiSurface, addZone);
+            _.each(indicator.marker.item, addMarker);
         });
     }
 
@@ -60,34 +48,20 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
 
             Logger.info('Initializing graph');
 
-            var ctx = document.getElementById("pie").getContext("2d");
-            var pieChart = new Chart(ctx).Pie(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'pieChart'})), {legend : true, animation: false});
+            $scope.charts = [];
 
-            var ctx1 = document.getElementById("bar").getContext("2d");
-            var barChart = new Chart(ctx1).Bar(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'barChart'})), {legend : true, animation: false});
-
-            var ctx2 = document.getElementById("barTotal").getContext("2d");
-            var barTotalChart = new Chart(ctx2).Bar(Graph.getConfig(indicator, geometry, _.find(indicator.legend, {for: 'totalBarChart'})), {legend : true, animation: false});
+            _.forEach(indicator.legend, function(legend, index){
+                if(legend.for == 'map') return; //Skip map...
+                $scope.charts.unshift({
+                    for: legend.for,
+                    data: Graph.getConfig(indicator, geometry, legend),
+                    title: legend.title
+                });
+            });
         },
         table: function(){
             Logger.info('Initializing table');
         }
-    }
-
-
-    function addRegion(region, legend){
-        $scope.legend = legend;
-        $scope.regions.push(region);
-
-        $scope.pieData[0].value += region.men*1;
-        $scope.pieData[1].value += region.women*1;
-
-        $scope.barData.labels.push(region.label);
-        $scope.barData.datasets[0].data.push(region.men);
-        $scope.barData.datasets[1].data.push(region.women);
-
-        $scope.barTotalData.labels.push(region.label);
-        $scope.barTotalData.datasets[0].data.push(region.total);
     }
 
     function addZone(zone){
@@ -130,6 +104,12 @@ angular.module('gisMobile').controller('IndicatorCtrl',  function(xmlparser, $sc
             leafPoly.bindPopup(popupMsg);
             map.addLayer(leafPoly);
         };
+    }
+
+    function addMarker(item){
+        var ptn = Geometry.changeProjection(indicator.marker.srcName, item.content).split(',');
+        var leafMarker = L.marker(ptn).addTo(map);
+        leafMarker.bindPopup(item.label);
     }
 
 
