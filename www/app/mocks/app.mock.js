@@ -198,5 +198,31 @@ angular
             color: '#FF0000',
             content: '201 et plus'
         }]
-    }
+    },
+    alerts: [{
+        type: 'totalParam',
+        comparator: 'isEqual 300',
+        params: ['primary', 'men'],
+        resolved: false
+    },{
+        type: 'zoneParam',
+        comparator: 'isBetween 99,101',
+        params: ['primary', 'men', 'z0'],
+        resolved: false
+    }],
+    savedAlerts: [{
+        type: 'totalParam',
+        comparator: 'isEqual 300',
+        params: ['primary', 'men'],
+        resolved: false,
+        _id: 'alert-000000',
+        _rev: 'something'
+    },{
+        type: 'zoneParam',
+        comparator: 'isBetween 99,101',
+        params: ['primary', 'men', 'z0'],
+        resolved: false,
+        _id: 'alert-111111',
+        _rev: 'something'
+    }]
 });
