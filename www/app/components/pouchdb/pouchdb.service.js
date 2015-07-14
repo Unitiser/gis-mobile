@@ -40,6 +40,7 @@ angular.module('gis.pouchdb', [])
     //List doc containing value in id
     function listAllIdWith(value){
         return $q.when(db.allDocs({
+            include_docs: true,
             startkey: value,
             endkey: value + '\uffff'
         }));
