@@ -37,11 +37,20 @@ angular.module('gis.pouchdb', [])
         }));
     }
 
+    //List doc containing value in id
+    function listAllIdWith(value){
+        return $q.when(db.allDocs({
+            startkey: value,
+            endkey: value + '\uffff'
+        }));
+    }
+
     return {
         openDatabase: openDatabase,
         put: put,
         get: get,
         remove: remove,
-        resetDatabase: resetDatabase
+        resetDatabase: resetDatabase,
+        listAllIdWith: listAllIdWith
     }
 });

@@ -75,6 +75,19 @@ describe("pouchdb service", function() {
         forceDigest();
     });
 
+    it('should be able to list all doc with value in id', function(done){
+        $pouchdb.openDatabase('supertest');
+        $pouchdb.put({_id: 'something1'});
+        $pouchdb.put({_id: 'something2'}).then(function(){
+            $pouchdb.listAllIdWith('something').then(function(res){
+                expect(res.total_rows).toBe(2);
+                done();
+            });
+            forceDigest();
+        });
+        forceDigest();
+    });
+
     function forceDigest(time){
         if(!time) time = 50;
         setTimeout(function() { $rootScope.$digest(); }, time);
