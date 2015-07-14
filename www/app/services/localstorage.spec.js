@@ -112,14 +112,14 @@ describe("localStorage service", function() {
     
     it('should be albe to list all alerts', function(done){
         localStorage.listAlerts()
-        .then(function(alerts) { expect(alerts.length).toBe(3);  })
+        .then(function(alerts) { expect(alerts.length).toBe(3); })
         .catch(expectNull).finally(done);
         forceDigest();
     });
 
     it('should be able to remove an alert', function(done){
         localStorage.listAlerts().then(function(alerts){
-            localStorage.removeAlert(alerts[0].id).then(expectOk).catch(expectNull).finally(done); 
+            localStorage.removeAlert(alerts[0]._id).then(expectOk).catch(expectNull).finally(done); 
             forceDigest();
         });
         forceDigest();

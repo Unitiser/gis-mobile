@@ -47,10 +47,16 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
     }
 
     function saveAlert(alert){
-        alert._id = "alert-" + Math.floor(Math.random() * 100000000).toString(16).substring(0,6); //Append a 6 digit random hexa
+        if(alert._id == undefined) //Append a 6 digit random hexa
+            alert._id = "alert-" + Math.floor(Math.random() * 100000000).toString(16).substring(0,6);
+
         return $pouchdb.put(alert)
         .catch(function(e){
-            if(e.name == 'conflict') saveAlert(alert); //Try a new random number
+            //Try a new random number
+            if(e.name == 'conflict') { 
+                alert._id = undefined; 
+                return saveAlert(alert); 
+            }
             return $q.reject(e);
         });
     }
@@ -58,7 +64,7 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
     function listAlerts(){
         return $pouchdb.listAllIdWith('alert-')
         .then(function(result){
-            return result.rows;
+            return _.pluck(result.rows, 'doc');
         });
     }
 
@@ -69,7 +75,7 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
     function flushAlerts(){
         return listAlerts().then(function(alerts){
             var promise;
-            _.forEach(alerts, function(alert, index){ promise = $pouchdb.remove(alert.id); });
+            _.forEach(alerts, function(alert, index){ promise = $pouchdb.remove(alert._id); });
             return promise;
         });
     }
