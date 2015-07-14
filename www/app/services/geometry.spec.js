@@ -66,11 +66,11 @@ describe('Geometry service', function(){
     it('should load geometry from file', function(done){
         Geometry.get()
         .then(function(geo){
+            expect(xmlParserMock.readFile).toHaveBeenCalled();
+            expect(localStorageMock.saveGeometry).toHaveBeenCalled();
             done();
         });
         $rootScope.$digest();
-        expect(xmlParserMock.readFile).toHaveBeenCalled();
-        expect(localStorageMock.saveGeometry).toHaveBeenCalled();
     });
 
     it('should load geometry from cache', function(done){
