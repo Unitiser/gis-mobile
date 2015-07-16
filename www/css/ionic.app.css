@@ -7739,3 +7739,16 @@ table {
 
 .clear-bottom-nav {
   margin-bottom: 50px; }
+
+.custom-side-menu.ng-hide {
+  margin-left: 60%; }
+
+.custom-side-menu {
+  margin-left: 0%;
+  transition: all 0.3s ease;
+  background-color: transparent; }
+  .custom-side-menu ion-content {
+    width: 60%;
+    margin-left: 40%;
+    background-color: white;
+    z-index: 2; }
