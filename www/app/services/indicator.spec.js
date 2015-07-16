@@ -83,6 +83,7 @@ describe("Indicator service", function() {
         .then(function(categories){
             expect(categories[1].name).toBe('Emplois par secteur d\'activité');
             expect(categories[0].name).toBe('Emplois par niveau de compétence');
+            expect(readFileSpy).toHaveBeenCalled();
             done();
         })
         .catch(function(e){
@@ -90,7 +91,6 @@ describe("Indicator service", function() {
         });
 
         $rootScope.$digest();
-        expect(readFileSpy).toHaveBeenCalled();
     });
 
     it('should list indicator by categories', function(done){
@@ -108,12 +108,14 @@ describe("Indicator service", function() {
 
     it('should retrieve a single indicator', function(done){
         Indicator.getSummary('primary')
-        .then(function(indicator){ expect(indicator.id).toBe('primary'); })
+        .then(function(indicator){ 
+            expect(indicator.id).toBe('primary'); 
+            expect(readFileSpy).toHaveBeenCalled();
+        })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(function(){done()});
 
         $rootScope.$digest();
-        expect(readFileSpy).toHaveBeenCalled();
     });
 
     it('should retrieve a single indicator #2', function(done){
@@ -142,12 +144,14 @@ describe("Indicator service", function() {
         $rootScope.$digest();
 
         Indicator.getSummary('something')
-        .then(function(indicator){ expect(indicator.id).toBe('something'); })
+        .then(function(indicator){ 
+            expect(indicator.id).toBe('something'); 
+            expect(readFileSpy.calls.count()).toBe(1);
+        })
         .catch(function(e){ expect(e).toBe(null); })
         .finally(done);
 
         $rootScope.$digest();
-        expect(readFileSpy.calls.count()).toBe(1);
     });
 
     it('should load the details of the indicator', function(){
@@ -171,4 +175,16 @@ describe("Indicator service", function() {
         $rootScope.$digest();
     });
 
+    it('should tell if an indicator is not cached', function(done){
+        Indicator.isCached('primary')
+        .then(function(isCached){ expect(isCached).toBe(false) }).finally(done);
+        $rootScope.$digest();
+    });
+
+    it('should tell if an indicator cached', function(done){
+        localStorageMock.isIndicatorCached = true;
+        Indicator.isCached('primary')
+        .then(function(isCached){ expect(isCached).toBe(true) }).finally(done);
+        $rootScope.$digest();
+    });
 });

@@ -71,6 +71,13 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         });
     }
 
+    //Check if an indicator is cached
+    function isCached(id){
+        return localStorage.getIndicator(id)
+        .then(function(ind){ return true; })
+        .catch(function(e){ return false; });
+    }
+
     //Load indicator details
     function get(id){
         return localStorage
@@ -131,6 +138,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         get: get,
         getSummary: getSummary,
         getByCategory: getByCategory,
-        validate: validate
+        validate: validate,
+        isCached: isCached
     }
 });
