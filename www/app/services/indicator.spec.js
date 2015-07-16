@@ -49,9 +49,9 @@ describe("Indicator service", function() {
             saveStructure: function(){
                 localStorageMock.isStructureCached = true;
             },
-            getIndicator: function(){
+            getIndicator: function(id){
                 var defer = $q.defer();
-                if(localStorageMock.isIndicatorCached)
+                if(localStorageMock.isIndicatorCached && id == 'primary')
                     defer.resolve(MOCKS.indicator);
                 else
                     defer.reject({name: 'not_found'});
@@ -185,6 +185,14 @@ describe("Indicator service", function() {
         localStorageMock.isIndicatorCached = true;
         Indicator.isCached('primary')
         .then(function(isCached){ expect(isCached).toBe(true) }).finally(done);
+        $rootScope.$digest();
+    });
+
+    it('should load offline indicators by categories', function(done){
+        localStorageMock.isIndicatorCached = true;
+        Indicator.getOfflineByCategory('activity_sector')
+        .then(function(cats){ expect(cats.length).toBe(1); })
+        .finally(done);
         $rootScope.$digest();
     });
 });

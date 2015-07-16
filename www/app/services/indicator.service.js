@@ -42,6 +42,20 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         });
     }
 
+    //Get all cached indicators by category
+    function getOfflineByCategory(catId){
+        return getByCategory(catId).then(function(inds){
+            var offlineInds = [];
+            var promise;
+            _.forEach(inds, function(ind){
+                promise = isCached(ind.id).then(function(isCached){
+                    if(isCached) offlineInds.push(ind);
+                });
+            });
+            return promise.then(function(){ return offlineInds; });
+        });
+    }
+
     //Get indicator by id
     function getSummary(id){
         return loadCategories().then(function(cats){
@@ -138,6 +152,7 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         get: get,
         getSummary: getSummary,
         getByCategory: getByCategory,
+        getOfflineByCategory: getOfflineByCategory,
         validate: validate,
         isCached: isCached
     }
