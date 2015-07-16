@@ -48,7 +48,7 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
 
     function saveAlert(alert){
         if(alert._id == undefined) //Append a 6 digit random hexa
-            alert._id = "alert-" + Math.floor(Math.random() * 100000000).toString(16).substring(0,6);
+            alert._id = "alert-" + (Math.floor(Math.random() * 100000000).toString(16) + "000000").substring(0,6);
 
         return $pouchdb.put(alert)
         .catch(function(e){
