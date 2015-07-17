@@ -7,7 +7,8 @@ angular.module('gisMobile', ['ionic',
                              'base64', 
                              'ngResource', 
                              'gis.xmlparser',
-                             'gis.pouchdb'])
+                             'gis.pouchdb',
+                             'ngCordova.plugins.network'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
