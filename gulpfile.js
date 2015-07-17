@@ -35,7 +35,8 @@ gulp.task('default', ['sass', 'inject', 'wiredep']);
 gulp.task('sass', function(done) {
   gulp.src('./src/assets/scss/ionic.app.scss')
     .pipe(sass({
-      errLogToConsole: true
+      errLogToConsole: true,
+      relative_assets: true
     }))
     .pipe(gulp.dest('./www/css/'))
     .pipe(minifyCss({
@@ -70,46 +71,60 @@ gulp.task('git-check', function(done) {
   done();
 });
 
-// Inject scripts in index.html
-gulp.task('inject', function(){
-  var target = gulp.src('./src/index.html');
-
-  var cssFile = ["css/ionic.app.css",
-                 "css/style.css"];
-
-  var sources = gulp.src(paths.js.concat(cssFile), {read: false, cwd: './www/'});
- 
-  return target
-    .pipe(inject(sources, {addRootSlash: false}))
-    .pipe(gulp.dest('./www/'));
-});
-
-//Inject bower in ./www/index.html (Must be done after inject)
-gulp.task('wiredep', function(){
-  gulp.src('./www/index.html')
+//Inject bower in ./www/index.html 
+gulp.task('wiredep', function(done){
+  gulp.src('./src/index.html')
     .pipe(wiredep({
       exclude: [ 'lib/ionic/css/ionic.css' ]
     }))
-    .pipe(gulp.dest('./www/'));
+    .pipe(gulp.dest('./www/'))
+    .on('end', done);
 });
 
-gulp.task('fetchBowerJS', function(){
-  gulp.src(mainBowerFiles())
-  .pipe(gulpFilter('**/*.js'))
-  .pipe(gulp.dest('./www/scripts/lib'));
+// Inject scripts in index.html
+gulp.task('injectJS', ['fetchJS', 'wiredep'], function(done){
+  var target = gulp.src('./www/index.html');
+  var jsFiles = ['app/**/*.js', 
+               '!app/**/*.spec.js', 
+               '!app/main-test.js',
+               '!app/mocks/*'];
+  var sources = gulp.src(jsFiles, {read: false, cwd: './src/'});
+ 
+  target.pipe(inject(sources, {addRootSlash: false}))
+    .pipe(gulp.dest('./www/'))
+    .on('end', done);
+});
+gulp.task('injectCSS', ['fetchCSS', 'wiredep'],function(){
+    var target = gulp.src('./www/index.html');
+    var cssFile = ["css/ionic.app.css",
+                   "css/style.css"];
+
+    var sources = gulp.src(cssFile, {read: false, cwd: './www/'});
+    target.pipe(inject(sources, {addRootSlash: false}))
+      .pipe(gulp.dest('./www/'))
+})
+
+gulp.task('fetchBower', function(){
+  gulp.src(mainBowerFiles(), {base: './src/lib/'})
+  .pipe(gulp.dest('./www/lib/'));
 });
 
-gulp.task('fetchJS', ['fetchBowerJS'],function(){
+gulp.task('fetchJS', ['fetchBower'],function(){
   gulp.src(paths.js)
-    .pipe(gulp.dest('./www/scripts/'))
+    .pipe(gulp.dest('./www/app/'))
 });
 
 gulp.task('fetchCSS', ['sass'],function(){
-  gulp.src(mainBowerFiles())
-  .pipe(gulpFilter('**/*.css'))
+  gulp.src(mainBowerFiles({filter : '**/*.css'}))
   .pipe(gulp.dest('./www/css'));
 });
 
+gulp.task('fetchHTML', function(){
+  gulp.src('./src/app/**/*.html')
+  .pipe(gulp.dest('./www/app/'));
+});
+
+gulp.task('testInject', ['injectJS', 'injectCSS', 'fetchHTML']);
 
 gulp.task('bundleJs', function(done){
   gulp.src(mainBowerFiles().concat(paths.js))
