@@ -1,0 +1,23 @@
+{
+  "name": "ChartNew.js",
+  "description": "Simple HTML5 Charts using the canvas element",
+  "keywords": [
+    "charts"
+  ],
+  "homepage": "https://github.com/FVANCOP/ChartNew.js",
+  "author": "FVANCOP",
+  "main": [
+    "ChartNew.js"
+  ],
+  "dependencies": {},
+  "_release": "57e8e1e94a",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "57e8e1e94a98559ec9ad2116ffc15eb8f027d6ab"
+  },
+  "_source": "git://github.com/FVANCOP/ChartNew.js.git",
+  "_target": "*",
+  "_originalSource": "chartnewjs",
+  "_direct": true
+}

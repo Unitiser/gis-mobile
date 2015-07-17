@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <!-- Security policies -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self' ;
+                   script-src 'self' 'unsafe-eval' 'unsafe-inline' http://192.168.0.117:8080/ http://192.168.0.117:35729/ ;
+                   connect-src 'self' ws://192.168.0.117:35729/ ;
+                   img-src 'self' http://*.tile.openstreetmap.org/ ;
+                   style-src 'self' 'unsafe-inline' ;">
+    
+    <title></title>
+
+    <!-- bower:css -->
+    <link rel="stylesheet" href="lib/leaflet/dist/leaflet.css" />
+    <!-- endbower -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="css/ionic.app.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- endinject -->
+    
+    <!-- bower:js -->
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-animate/angular-animate.js"></script>
+    <script src="lib/angular-sanitize/angular-sanitize.js"></script>
+    <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="lib/ionic/js/ionic.js"></script>
+    <script src="lib/ionic/js/ionic-angular.js"></script>
+    <script src="lib/leaflet/dist/leaflet.js"></script>
+    <script src="lib/leaflet/dist/leaflet-src.js"></script>
+    <script src="lib/lodash/lodash.js"></script>
+    <script src="lib/proj4/dist/proj4.js"></script>
+    <script src="lib/pouchdb/dist/pouchdb.js"></script>
+    <script src="lib/angular-base64/angular-base64.js"></script>
+    <script src="lib/angular-resource/angular-resource.js"></script>
+    <script src="lib/js-logger/src/logger.js"></script>
+    <script src="lib/chartnewjs/ChartNew.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <!-- endbower -->
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+    
+    <!-- inject:js -->
+    <script src="app/app.js"></script>
+    <script src="app/config.js"></script>
+    <script src="app/home/home.controller.js"></script>
+    <script src="app/indicators/indicators.controller.js"></script>
+    <script src="app/indicators/indicators.js"></script>
+    <script src="app/indicator/indicator.controller.js"></script>
+    <script src="app/indicator/indicator.js"></script>
+    <script src="app/settings/settings.controller.js"></script>
+    <script src="app/settings/settings.js"></script>
+    <script src="app/services/alert.service.js"></script>
+    <script src="app/services/auth.service.js"></script>
+    <script src="app/services/geometry.service.js"></script>
+    <script src="app/services/graph.service.js"></script>
+    <script src="app/services/indicator.service.js"></script>
+    <script src="app/services/localstorage.service.js"></script>
+    <script src="app/services/preload.service.js"></script>
+    <script src="app/components/xmlparser/xmlparser.service.js"></script>
+    <script src="app/components/pouchdb/pouchdb.service.js"></script>
+    <script src="app/directives/graph/graph.directive.js"></script>
+    <!-- endinject -->
+
+    <!-- Weinre script -->
+    <script src="http://192.168.0.117:8080/target/target-script-min.js#anonymous"></script>
+
+  </head>
+  <body ng-app="gisMobile">
+    <ion-nav-bar class="bar-positive">
+        <ion-nav-back-button class="button-clear">
+            <i class="ion-arrow-left-c"></i> Back
+        </ion-nav-back-button>
+        <ion-nav-buttons side="right">
+            <!-- Toggle right side menu -->
+            <button ng-if="toggleMenu" ng-click="toggleMenu()" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+    </ion-nav-bar>
+
+    <ion-nav-view></ion-nav-view>    
+  </body>
+</html>

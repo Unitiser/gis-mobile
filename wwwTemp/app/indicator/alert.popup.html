@@ -1,0 +1,40 @@
+
+<div>
+    <div ng-show="areRequiredFieldTaken">
+        <i class="ion-information-circled"></i>
+        Vous devez remplir tout les champs.
+    </div>
+    <div ng-show="!areRequiredFieldTaken && areNumericValueValid">
+        <i class="ion-information-circled"></i>
+        Vous devez saisir des valeurs numériques
+    </div>
+    <label for="">M'aviser si</label>
+    <select ng-model="alert.type">
+        <option ng-repeat="t in type" value="{{t.value}}">{{t.label}}</option>
+    </select>
+    <label for="">des</label>
+    <!-- Param -->
+    <select name="" id="" ng-model="alert.param">
+        <option ng-repeat="p in param" value="{{p.value}}">{{p.label}}</option>
+    </select>
+
+    <!-- If it's a zoneParam -->
+    <div ng-show="alert.type == 'zoneParam'" >
+        <label for="">pour</label>
+        <select ng-model="alert.zone">
+            <option ng-repeat="z in zone" value="{{z.value}}">{{z.label}}</option>
+        </select>
+    </div>
+    <!-- If it's a totalParam -->
+
+    <!-- Comparator -->
+    <select ng-model="alert.comparatorType">
+        <option ng-repeat="c in comparator" value="{{c.value}}">{{c.label}}</option>
+    </select>
+
+    <input type="text" class="inline-textbox-short" ng-model="alert.comparatorValue1">
+    <div ng-if="alert.comparatorType == 'isBetween'">
+        <label for=""> et </label>
+        <input type="text" class="inline-textbox-short" ng-model="alert.comparatorValue2">
+    </div>
+</div>

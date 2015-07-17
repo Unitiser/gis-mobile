@@ -8,6 +8,7 @@ var karma = require('karma').server;
 //Tools to inject the scripts
 var wiredep = require('wiredep').stream;
 var inject = require('gulp-inject');
+var preprocess = require('gulp-preprocess');
 
 //Tools to bundle the app
 var sass = require('gulp-sass');
@@ -20,13 +21,19 @@ var uglify = require('gulp-uglify');
 var ngAnnotate = require('gulp-ng-annotate');
 
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass: ['./src/assets/scss/**/*.scss'],
+  js: ['./src/app/**/*.js', 
+       '!./src/app/**/*.spec.js', 
+       '!./src/app/main-test.js',
+       '!./src/app/mocks/*'],
+  css: ["css/ionic.app.css",
+        "css/style.css"]
 };
 
 gulp.task('default', ['sass', 'inject', 'wiredep']);
 
 gulp.task('sass', function(done) {
-  gulp.src('./scss/ionic.app.scss')
+  gulp.src('./src/assets/scss/ionic.app.scss')
     .pipe(sass({
       errLogToConsole: true
     }))
@@ -63,7 +70,21 @@ gulp.task('git-check', function(done) {
   done();
 });
 
-// Inject script in index.html
+// Inject scripts in index.html
+gulp.task('inject', function(){
+  var target = gulp.src('./src/index.html');
+
+  var cssFile = ["css/ionic.app.css",
+                 "css/style.css"];
+
+  var sources = gulp.src(paths.js.concat(cssFile), {read: false, cwd: './www/'});
+ 
+  return target
+    .pipe(inject(sources, {addRootSlash: false}))
+    .pipe(gulp.dest('./www/'));
+});
+
+//Inject bower in ./www/index.html (Must be done after inject)
 gulp.task('wiredep', function(){
   gulp.src('./www/index.html')
     .pipe(wiredep({
@@ -72,27 +93,26 @@ gulp.task('wiredep', function(){
     .pipe(gulp.dest('./www/'));
 });
 
-gulp.task('inject', function(){
-  var target = gulp.src('./www/index.html');
-  var jsFiles = ['app/**/*.js', 
-               '!app/**/*.spec.js', 
-               '!app/main-test.js',
-               '!app/mocks/*'];
-  var cssFile = ["css/ionic.app.css",
-                 "css/style.css"];
-  var sources = gulp.src(jsFiles.concat(cssFile), {read: false, cwd: './www/'});
- 
-  return target.pipe(inject(sources, {addRootSlash: false}))
-    .pipe(gulp.dest('./www/'));
+gulp.task('fetchBowerJS', function(){
+  gulp.src(mainBowerFiles())
+  .pipe(gulpFilter('**/*.js'))
+  .pipe(gulp.dest('./www/scripts/lib'));
 });
 
-gulp.task('bundleJs', function(done){
-  var jsFiles = ['./www/app/**/*.js', 
-                 '!./www/app/**/*.spec.js', 
-                 '!./www/app/main-test.js',
-                 '!./www/app/mocks/*'];
+gulp.task('fetchJS', ['fetchBowerJS'],function(){
+  gulp.src(paths.js)
+    .pipe(gulp.dest('./www/scripts/'))
+});
 
-  gulp.src(mainBowerFiles().concat(jsFiles))
+gulp.task('fetchCSS', ['sass'],function(){
+  gulp.src(mainBowerFiles())
+  .pipe(gulpFilter('**/*.css'))
+  .pipe(gulp.dest('./www/css'));
+});
+
+
+gulp.task('bundleJs', function(done){
+  gulp.src(mainBowerFiles().concat(paths.js))
     .pipe(gulpFilter('**/*.js'))
     .pipe(sourcemaps.init())
     .pipe(concat('bundle.js'))
@@ -128,3 +148,11 @@ gulp.task('test', function (done) {
         done();
     });
 });
+
+gulp.task('envDev', function(done){
+  gulp.src()
+    .pipe(preprocess())
+    .pipe(gulp.dest());
+});
+
+gulp.task('envProd');
