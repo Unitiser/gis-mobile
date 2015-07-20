@@ -7,12 +7,13 @@ var fs = require('fs');
 module.exports = function(config) {
   //Get bower dependencies
   var bower = [];
-  _.forEach(mainBowerFiles('**/*.js', { includeDev: true }), function(path){ bower.push(path.replace(__dirname + '/www/', '')); });
+  _.forEach(mainBowerFiles('**/*.js', { includeDev: true }), function(path){ bower.push(path.replace(__dirname + '/src/', '')); });
+  bower.push('lib/ngCordova/dist/ng-cordova-mocks.js');
 
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: 'www/',
+    basePath: 'src/',
 
 
     // frameworks to use

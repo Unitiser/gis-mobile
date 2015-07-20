@@ -2,9 +2,7 @@
   "name": "GIS Mobile",
   "app_id": "3d56a21a",
   "gulpStartupTasks": [
-    "sass",
-    "wiredep",
-    "inject",
+    "dev",
     "watch"
   ],
   "proxies": [

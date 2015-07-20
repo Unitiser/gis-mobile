@@ -19,10 +19,11 @@ var gulpFilter = require('gulp-filter');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var ngAnnotate = require('gulp-ng-annotate');
+var del = require('del');
 
 var paths = {
   sass: ['./src/assets/scss/**/*.scss'],
-  js: ['./src/app/**/*.js', 
+  js: ['./src/app/**/*.js',
        '!./src/app/**/*.spec.js', 
        '!./src/app/main-test.js',
        '!./src/app/mocks/*'],
@@ -49,6 +50,7 @@ gulp.task('sass', function(done) {
 
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.js, ['fetch']);
 });
 
 gulp.task('install', ['git-check'], function() {
@@ -75,7 +77,7 @@ gulp.task('git-check', function(done) {
 gulp.task('wiredep', function(done){
   gulp.src('./src/index.html')
     .pipe(wiredep({
-      exclude: [ 'lib/ionic/css/ionic.css' ]
+      exclude: [ 'lib/ionic/css/ionic.css', 'lib/ngCordova/dist/ng-cordova.js' ]
     }))
     .pipe(gulp.dest('./www/'))
     .on('end', done);
@@ -84,33 +86,28 @@ gulp.task('wiredep', function(done){
 // Inject scripts in index.html
 gulp.task('injectJS', ['fetchJS', 'wiredep'], function(done){
   var target = gulp.src('./www/index.html');
-  var jsFiles = ['app/**/*.js', 
-               '!app/**/*.spec.js', 
-               '!app/main-test.js',
-               '!app/mocks/*'];
-  var sources = gulp.src(jsFiles, {read: false, cwd: './src/'});
- 
-  target.pipe(inject(sources, {addRootSlash: false}))
+  var sources = gulp.src(['./src/lib/ngCordova/dist/ng-cordova-mocks.js']
+                          .concat(paths.js), {read: false });
+
+  target.pipe(inject(sources, {addRootSlash: false, ignorePath: 'src/'}))
     .pipe(gulp.dest('./www/'))
     .on('end', done);
 });
 gulp.task('injectCSS', ['fetchCSS', 'wiredep'],function(){
     var target = gulp.src('./www/index.html');
-    var cssFile = ["css/ionic.app.css",
-                   "css/style.css"];
-
-    var sources = gulp.src(cssFile, {read: false, cwd: './www/'});
-    target.pipe(inject(sources, {addRootSlash: false}))
+    var sources = gulp.src(paths.css, {read: false, cwd: './www/' });
+    target.pipe(inject(sources, {addRootSlash: false }))
       .pipe(gulp.dest('./www/'))
 })
 
+// Copy file into www/
 gulp.task('fetchBower', function(){
-  gulp.src(mainBowerFiles(), {base: './src/lib/'})
+  gulp.src(mainBowerFiles().concat('./src/lib/ngCordova/dist/ng-cordova-mocks.js'), { base: './src/lib/' })
   .pipe(gulp.dest('./www/lib/'));
 });
 
 gulp.task('fetchJS', ['fetchBower'],function(){
-  gulp.src(paths.js)
+  gulp.src(paths.js.concat(['!./src/app/app.js']))
     .pipe(gulp.dest('./www/app/'))
 });
 
@@ -124,16 +121,69 @@ gulp.task('fetchHTML', function(){
   .pipe(gulp.dest('./www/app/'));
 });
 
-gulp.task('testInject', ['injectJS', 'injectCSS', 'fetchHTML']);
+gulp.task('fetchAssets', function(){
+  gulp.src(['./src/assets/**/*', '!./src/assets/scss', '!./src/assets/scss/**/*'])
+  .pipe(gulp.dest('./www/assets'));
+});
 
+gulp.task('fetchLibFonts', function(){
+  gulp.src(mainBowerFiles({filter : ['**/*.woff', '**/*.ttf']}), { base: './src/lib/' })
+    .pipe(gulp.dest('./www/lib'));
+});
+
+gulp.task('fetchLibImg', function(){
+  gulp.src(mainBowerFiles({filter : ['**/*.png']}))
+    .pipe(gulp.dest('./www/img'));
+});
+
+gulp.task('fetch', ['fetchJS', 'fetchBower', 'fetchCSS', 'fetchHTML', 'fetchAssets']);
+
+gulp.task('removeWWW', function(done){
+  del(['www'], done);
+});
+
+gulp.task('inject', ['injectJS', 'injectCSS']);
+
+gulp.task('dev', ['removeWWW'], function(done){
+  gulp.src('./src/app/app.js')
+  .pipe(preprocess({context: { NODE_ENV: 'development' }}))
+  .pipe(gulp.dest('./www/app/'));
+
+  gulp.start(['inject', 'fetch'])
+  .on('end', done);
+});
+
+
+gulp.task('prod', ['removeWWW'], function() {
+  //Use the prepared app.js
+  paths.js.push('!./src/app/app.js');
+  paths.js.unshift('./www/app.js');
+
+  gulp.src('./src/app/app.js')
+    .pipe(preprocess({context: { NODE_ENV: 'production' }}))
+    .pipe(gulp.dest('./www/'))
+    .on('end', function(){
+      gulp.start(['bundle', 'fetchHTML', 'fetchAssets', 'fetchLibFonts', 'fetchLibImg','injectBundle']);
+    });
+});
+
+//Bundle the application in a single page app
 gulp.task('bundleJs', function(done){
   gulp.src(mainBowerFiles().concat(paths.js))
     .pipe(gulpFilter('**/*.js'))
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(concat('bundle.js'))
     .pipe(ngAnnotate())
     .pipe(uglify())
-    .pipe(sourcemaps.write('./'))
+    // .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./www/'))
+    .on('end', done);
+});
+
+//Avoid uglify and ngAnnotate, theyre way to slow ...
+gulp.task('softBundleJS', function(done){
+  gulp.src(mainBowerFiles({filter : '**/*.js'}).concat(paths.js))
+    .pipe(concat('bundle.js'))
     .pipe(gulp.dest('./www/'))
     .on('end', done);
 });
@@ -145,13 +195,24 @@ gulp.task('bundleCss', ['sass'], function(done){
   gulp.src(mainBowerFiles().concat(cssFile))
     .pipe(gulpFilter('**/*.css'))
     .pipe(concat('bundle.css'))
-    .pipe(gulp.dest('./www/'))
+    .pipe(gulp.dest('./www/css'))
     .pipe(minifyCss({
       keepSpecialComments: 0
     }))
     .pipe(rename({ extname: '.min.css' }))
-    .pipe(gulp.dest('./www/'))
+    .pipe(gulp.dest('./www/css'))
     .on('end', done);;
+});
+
+gulp.task('bundle', ['softBundleJS', 'bundleCss']);
+
+gulp.task('injectBundle',['softBundleJS', 'bundleCss'], function(){
+  var bundle = ['./www/bundle.js',
+                './www/css/bundle.min.css'];
+  var target = gulp.src('./src/index.html');
+  var sources = gulp.src(bundle, {read: false });
+  target.pipe(inject(sources, {addRootSlash: false, ignorePath: 'www/' }))
+      .pipe(gulp.dest('./www/'))
 });
 
 //Run karma tests
