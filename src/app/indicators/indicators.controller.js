@@ -1,6 +1,5 @@
 angular.module('gisMobile').controller('IndicatorsCtrl', function($scope, $state, Indicator, $rootScope, $cordovaNetwork){
     function addIndicator(indicator){
-        console.log(indicator);
         $scope.indicators.push({
             id: indicator.id,
             name: indicator.label,

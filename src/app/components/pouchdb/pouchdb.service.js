@@ -2,6 +2,7 @@ angular.module('gis.pouchdb', [])
 .service('$pouchdb', function($q){
     var db;
     var dbName;
+    var Log = Logger.get('PouchDB');
 
     //Open the database and return the information
     function openDatabase(name){
@@ -15,6 +16,7 @@ angular.module('gis.pouchdb', [])
         return $q.when(db.destroy())
         .then(function(promise){
             db = new PouchDB(dbName);
+            Log.info('Database reconstructed');
             return promise;
         });
     }

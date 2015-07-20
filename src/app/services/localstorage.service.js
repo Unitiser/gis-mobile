@@ -1,4 +1,6 @@
 angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL_DB_NAME){
+    var Log = Logger.get('localStorage');
+
     //Init
     function init(){
         $pouchdb.openDatabase(LOCAL_DB_NAME);
@@ -28,12 +30,14 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
 
     //Save/update the geometry
     function saveGeometry(geo){
-        geo._id = 'geometry'
+        Log.info('Geometry was saved');
+        geo._id = 'geometry';
         return $pouchdb.put(geo)
     }
 
     //Get the geometry
     function getGeometry(){
+        Log.info('Fetching geometry');
         return $pouchdb.get('geometry')
     }
 
