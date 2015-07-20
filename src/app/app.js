@@ -8,7 +8,15 @@ angular.module('gisMobile', ['ionic',
                              'ngResource', 
                              'gis.xmlparser',
                              'gis.pouchdb',
-                             'ngCordova.plugins.network'])
+// @if NODE_ENV='development'
+                             'ngCordovaMocks'
+// @endif
+
+// @if NODE_ENV='production'
+                             'ngCordova'
+// @endif
+                            ])
+
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -32,3 +40,7 @@ angular.module('gisMobile', ['ionic',
 
   $urlRouterProvider.otherwise('/');
 });
+
+// @if NODE_ENV='production'
+L.Icon.Default.imagePath = 'img';
+// @endif
