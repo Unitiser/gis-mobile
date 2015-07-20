@@ -1,5 +1,5 @@
 angular
-.module('gisMobile', ['gis.xmlparser', 'gis.pouchdb'])
+.module('gisMobile', ['gis.xmlparser', 'gis.pouchdb', 'ngCordovaMocks'])
 .constant('MOCKS', {
 
     structure : {
