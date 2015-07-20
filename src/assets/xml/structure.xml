@@ -35,7 +35,7 @@
             id="sample" 
             label="Échantillon" 
             version="1.0" 
-            url="lib/xmlDocuments/sampleIndicator.xml">
+            url="assets/xml/sampleIndicator.xml">
         </indicator>
     </category>
     <category id="competency_level" label="Emplois par niveau de compétence">
@@ -73,6 +73,6 @@
     <geometry 
         id="cdq" 
         version="1.0" 
-        url="lib/xmlDocuments/geometry.xml">
+        url="assets/xml/geometry.xml">
     </geometry>
 </document>
