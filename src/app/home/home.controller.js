@@ -1,4 +1,4 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Geometry, Auth, $http, Preload){
+angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Alert, Auth, $http, Preload){
     //Load the external data during the splash screen
     $scope.$on('$ionicView.loaded', function() {
       ionic.Platform.ready( function() {
@@ -13,6 +13,19 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, G
                 name: 'Paramètres',
                 icon: 'ion-gear-b',
                 link: '/settings'
+            });
+            return Alert.list();
+        })
+        .then(function(alerts){
+            $scope.alerts = [];
+            console.log(alerts);
+            _.forEach(alerts, function(a, index){
+                console.log(a);
+                var myAlert = Alert.create(a);
+                if(myAlert.isThrown){
+                    console.log(myAlert);
+                    $scope.alerts.push( a.params[0] + " " + a.params[1] + " in zone " + a.params[2] + " " + a.comparator );
+                }
             });
         });
       });
