@@ -34,7 +34,7 @@
         <indicator
             id="sample" 
             label="Échantillon" 
-            version="1.0" 
+            version="2.0" 
             url="assets/xml/sampleIndicator.xml">
         </indicator>
     </category>
