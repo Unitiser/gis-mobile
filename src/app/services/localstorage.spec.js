@@ -38,6 +38,12 @@ describe("localStorage service", function() {
         forceDigest();
     });
 
+    it('should be able to flush a structure', function(done){
+        localStorage.flushStructure()
+        .then(expectOk).catch(expectNull)
+        .finally(done);
+        forceDigest();
+    });
 
     it('should tell if an indicator does not exists', function(done){
        localStorage.getIndicator('primary')
@@ -59,6 +65,13 @@ describe("localStorage service", function() {
        localStorage.getIndicator('primary')
         .then(function(indicator) { expect(indicator.label).toBe('Primaire'); })
         .catch(expectNull)
+        .finally(done);
+        forceDigest();
+    });
+
+    it('should be able to flush an indicator', function(done){
+        localStorage.flushIndicator('primary')
+        .then(expectOk).catch(expectNull)
         .finally(done);
         forceDigest();
     });

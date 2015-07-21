@@ -17,6 +17,10 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
         return $pouchdb.get('structure');
     }
 
+    function flushStructure(){
+        return $pouchdb.remove('structure');
+    }
+
     //Update/save an indicator
     function saveIndicator(indicator){
         indicator._id = indicator.name;
@@ -26,6 +30,11 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
     //Get an indicator
     function getIndicator(name){
         return $pouchdb.get(name);
+    }
+
+    //Flush indicator
+    function flushIndicator(id){
+        return $pouchdb.remove(id);
     }
 
     //Save/update the geometry
@@ -88,9 +97,11 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
     return {
         saveStructure: saveStructure,
         getStructure: getStructure,
+        flushStructure: flushStructure,
         
         getIndicator: getIndicator,
         saveIndicator: saveIndicator,
+        flushIndicator: flushIndicator,
 
         getGeometry: getGeometry,
         saveGeometry: saveGeometry,
