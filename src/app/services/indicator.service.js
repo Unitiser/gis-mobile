@@ -126,13 +126,12 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
 
                 //Save it
                 localStorage.saveIndicator(staticPart);
-
                 return staticPart;
             });
         });
     }
 
-    //Build the dynamic structure for extration
+    //Build the dynamic indicator structure for extration
     function getDynamicStructure(staticPart){
         var params = staticPart.param;
         var dynamicStruct = {
@@ -146,6 +145,15 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         return dynamicStruct;
     }
 
+    //delete cached structure document
+    function flushStructure(){
+        return localStorage.flushStructure();
+    }
+
+    function flushIndicator(id){
+        return localStorage.flushIndicator(id);
+    }
+
     //Return the public api
     return {
         getCategories: getCategories,
@@ -154,6 +162,8 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         getByCategory: getByCategory,
         getOfflineByCategory: getOfflineByCategory,
         validate: validate,
+        flushStructure: flushStructure,
+        flushIndicator: flushIndicator,
         isCached: isCached
     }
 });

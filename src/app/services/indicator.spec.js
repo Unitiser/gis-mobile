@@ -36,6 +36,7 @@ describe("Indicator service", function() {
         };
 
         localStorageMock = {
+            isMock: true,
             isStructureCached: false,
             isIndicatorCached: false,
             getStructure: function(){
@@ -49,6 +50,12 @@ describe("Indicator service", function() {
             saveStructure: function(){
                 localStorageMock.isStructureCached = true;
             },
+            flushStructure: function(){
+                var defer = $q.defer();
+                defer.resolve();
+                localStorageMock.isStructureCached = false;
+                return defer.promise;
+            },
             getIndicator: function(id){
                 var defer = $q.defer();
                 if(localStorageMock.isIndicatorCached && id == 'primary')
@@ -59,6 +66,10 @@ describe("Indicator service", function() {
             },
             saveIndicator: function(){
                 localStorageMock.isIndicatorCached = true;
+            },
+            flushIndicator: function(){
+                localStorageMock.isIndicatorCached = false;
+                return $q.when(false);
             }
         }
 
@@ -69,6 +80,8 @@ describe("Indicator service", function() {
         readFileSpy = spyOn(xmlParserMock, 'readFile').and.callThrough();
         getStructureSpy = spyOn(localStorageMock, 'getStructure').and.callThrough();
         saveStructureSpy = spyOn(localStorageMock, 'saveStructure').and.callThrough();
+        spyOn(localStorageMock, 'flushStructure').and.callThrough();
+        spyOn(localStorageMock, 'flushIndicator').and.callThrough();
     }));
 
     beforeEach(inject(function(_$q_, _$rootScope_, _Indicator_, _MOCKS_) {
@@ -192,6 +205,20 @@ describe("Indicator service", function() {
         localStorageMock.isIndicatorCached = true;
         Indicator.getOfflineByCategory('activity_sector')
         .then(function(cats){ expect(cats.length).toBe(1); })
+        .finally(done);
+        $rootScope.$digest();
+    });
+
+    it('should be able to flush the structure', function(done){
+        Indicator.flushStructure()
+        .then(function(){ expect(localStorageMock.flushStructure).toHaveBeenCalled(); })
+        .finally(done);
+        $rootScope.$digest();
+    });
+
+    it('should be able to flush an indicator', function(done){
+        Indicator.flushIndicator()
+        .then(function(){ expect(localStorageMock.flushIndicator).toHaveBeenCalled(); })
         .finally(done);
         $rootScope.$digest();
     });
