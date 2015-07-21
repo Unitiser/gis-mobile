@@ -1,33 +1,19 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Geometry, Auth, $http){
+angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Geometry, Auth, $http, Preload){
     //Load the external data during the splash screen
     $scope.$on('$ionicView.loaded', function() {
       ionic.Platform.ready( function() {
         Logger.time('Loading categories');
-        Indicator.getCategories()
+        Preload.go()
+        .then(function(){
+            return Indicator.getCategories();
+        })
         .then(function(cats){
-            Logger.timeEnd('Loading categories');
             $scope.items = cats;
             $scope.items.push({
                 name: 'Paramètres',
                 icon: 'ion-gear-b',
                 link: '/settings'
             });
-
-            if(navigator && navigator.splashscreen){
-                Logger.info('Hiding splash screen');
-                navigator.splashscreen.hide();
-            }
-
-            //Preload geometry
-            return Geometry.validate()
-        })
-        .then(function(isValid){
-            if(!isValid){
-                Logger.info('Geometry is invalid');
-                return Geometry.flush()
-                .finally(function(){ Geometry.get(); });
-            }
-            Logger.info('Geometry is valid');
         });
       });
     });
@@ -65,6 +51,14 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, G
         }).error(function(e){
             console.log(e);
         });
+    }
+
+    $scope.testPreloadAlerts = function(){
+        Preload.preloadAlerts();
+    }
+
+    $scope.testReloadStructure = function(){
+        Preload.reloadStructure();
     }
 
     // $scope.testGetIndicator = function(){
