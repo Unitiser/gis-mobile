@@ -1,6 +1,6 @@
 angular.module('gisMobile').service('Graph', function($q){
     //Produce a config for chartjs based on a legend
-
+    var Log = Logger.get('Graph.service');
     function getConfig(indicator, geometry, legend){
         switch(legend.for){
             case 'pieChart':
@@ -12,6 +12,9 @@ angular.module('gisMobile').service('Graph', function($q){
             case 'totalBarChart':
                 return getTotalBarChartConfig(indicator, geometry, legend);
             break;
+            default:
+                Log.warn(legend.for + ' is not implemented');
+            break
         }        
     }
 
