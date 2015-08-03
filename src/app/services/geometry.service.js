@@ -5,8 +5,8 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
     //Load geometry
     function load(){
         //Hook posList call back to GEOMETRY_JSON
-        GEOMETRY_JSON.domainSet.MultiSurface.Polygon.exterior.posList.callback = processPosList;
-        GEOMETRY_JSON.domainSet.MultiSurface.Polygon.interior.posList.callback = processPosList;
+        GEOMETRY_JSON.domainSet.MultiSurface.Polygon.outerBoundaryIs.coordinates.callback = processPosList;
+        GEOMETRY_JSON.domainSet.MultiSurface.Polygon.innerBoundaryIs.coordinates.callback = processPosList;
 
         Log.time('Loading geometry');
         return localStorage.getGeometry()
@@ -55,7 +55,10 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
         var rawPos = posListNode.content.trim().split(' ');
         var result = [];
         for (var i = rawPos.length - 1; i >= 0; i--) {
-            result.push(toLeafletPoint(changeProjection("EPSG:32188", rawPos[i].split(','))));
+            // result.push(toLeafletPoint(changeProjection("EPSG:32188", rawPos[i].split(','))));
+            // console.log(rawPos[i].charCodeAt(0));
+            if(rawPos[i] != '' && rawPos[i].charCodeAt(0) != 10)
+                result.push(toLeafletPoint(rawPos[i].split(',')));
         };
         // console.log(result);
         posListNode.content = result;
