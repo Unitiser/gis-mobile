@@ -1,6 +1,6 @@
 angular.module('gisMobile')
 //URL to fetch the structure document
-.constant('STRUCTURE_URL', 'assets/xml/structure.xml')
+.constant('STRUCTURE_URL', '/mobileApi/structure')
 
 //Name of the NoSQL database that will be used localy
 .constant('LOCAL_DB_NAME', 'gisMobile')
@@ -34,7 +34,10 @@ angular.module('gisMobile')
 .constant('INDICATOR_JSON',{
     name: { attrs: ['$content'] },
     description: { attrs: ['$content'] },
-    param: {attrs: ['name', 'type', '$content'] },
+    param: { 
+        attrs: ['name', 'type', '$content', '$firstGen'],
+        param: { attrs: ['name', 'type', '$content'] } 
+    },
     marker: {
         attrs: ['srcName'],
         item: { attrs: ['label', '$content'] }
@@ -54,13 +57,14 @@ angular.module('gisMobile')
             name: { attrs: ['$content'] },
             description: { attrs: ['$content'] },
             Polygon: {
-                exterior: {
-                    posList: { attrs: ['$content'] }
+                outerBoundaryIs: {
+                    coordinates: { attrs: ['$content'] }
                 },
-                interior: {
+                innerBoundaryIs: {
                     attrs: ['$isArray'],
-                    posList: { attrs: ['$content'] }
-                }
+                    coordinates: { attrs: ['$content'] }
+                },
+                attrs: ['$isArray']
             }
         }
     },

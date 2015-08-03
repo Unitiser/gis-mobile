@@ -11,8 +11,8 @@
       "proxyUrl": "http://192.168.0.117:8080/gis-mobile/oauth/token"
     },
     {
-      "path": "/testuser",
-      "proxyUrl": "http://192.168.0.117:8080/gis-mobile/private/user"
+      "path": "/mobileApi",
+      "proxyUrl": "http://localhost:8080/evalpro-dashboard/mobileApi"
     },
     {
       "path": "/testnobody",
