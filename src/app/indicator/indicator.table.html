@@ -3,16 +3,12 @@
     <table>
         <thead>
             <tr>
-                <th>Région</th>
-                <th>Hommes</th>
-                <th>Femmes</th>
+                <th ng-repeat="th in tableHeader">{{th.label}}</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="region in regions">
-                <td class="">{{region.label}}</td>
-                <td class="right">{{region.men}}</td>
-                <td class="right">{{region.women}}</td>
+            <tr ng-repeat="item in table">
+                <td ng-repeat="th in tableHeader" class="">{{ item[th.name] }}</td>
             </tr>
         </tbody>
     </table>
