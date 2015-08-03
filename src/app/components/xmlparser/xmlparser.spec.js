@@ -3,7 +3,7 @@
 
 describe("XML data parser service", function() {
   var basePathXml = '/base/lib/xmlDocuments/';
-  var xmlparser, $httpBackend;
+  var xmlparser, $httpBackend, $rootScope;
 
   beforeEach (module ('gis.xmlparser'));
   
@@ -11,6 +11,7 @@ describe("XML data parser service", function() {
     // Set up the mock http service responses
     $httpBackend = $injector.get('$httpBackend');
     xmlparser = $injector.get('xmlparser');
+    $rootScope = $injector.get('$rootScope');
 
     //Mock basic document
     $httpBackend.whenGET('/test/xml/basicdoc')
@@ -96,7 +97,7 @@ describe("XML data parser service", function() {
     $httpBackend.flush();
   });
 
-  it("should be able to read xml directly", function(){
+  it("should be able to read xml directly", function(done){
     var structure = {
     'section': {
             attrs: ['name', 'controller', 'model'],
@@ -113,6 +114,7 @@ describe("XML data parser service", function() {
         expect(data['section'][4]['info'].length).toBe(4);
         done();
     });
+    $rootScope.$digest();
   });
 
   it("should be able to read from complex json structure.", function(done){
@@ -181,7 +183,19 @@ describe("XML data parser service", function() {
         });
     $httpBackend.flush();
   });
-
+  
+  it("should return only elements from the first generation of children when attr $firstGen is specified", function(done){
+    var structure = {
+      param: {
+        attrs: ['name', 'type', '$firstGen', '$isArray']
+      }
+    }
+    xmlparser.readXML(generationalMock, structure).then(function(parsedDoc){
+      expect(parsedDoc.param.length).toBe(1);
+      done()
+    });
+    $rootScope.$digest();
+  });
 
   var basicMock = '<document>' +
        '<section name="detail">' +
@@ -229,4 +243,14 @@ describe("XML data parser service", function() {
           '</view>' +
       '</section>' +
   '</document>';
+
+  var generationalMock ='<document> ' +
+                        '    <param name="project" type="Element"> ' +
+                        '        <param name="name" type="String"/> ' +
+                        '        <param name="value" type="Integer"/> ' +
+                        '        <param name="financial" type="String"/> ' +
+                        '        <param name="note" type="Integer"/> ' +
+                        '    </param> ' +
+                        '</document> ';
 });
+

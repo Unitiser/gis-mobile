@@ -64,8 +64,12 @@ angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
     }
 
     function parseNode(rootNode, name, prop, result){
-        var isArray;
-        var nodes = rootNode.getElementsByTagName(name);
+        var isArray, nodes;
+
+        if(arrayContains(prop.attrs, '$firstGen')) 
+            nodes = getChildElementByName(rootNode, name);
+        else
+            nodes = rootNode.getElementsByTagName(name);
 
         if(nodes.length > 0)
             result[name] = [];
@@ -104,6 +108,23 @@ angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
             result[name].push(parsedNode);
         }
         if(prop['callback']) prop['callback'](parsedNode);
+    }
+
+    function getChildElementByName(element, name){
+        var childElement = [];
+
+        for (var i = element.childNodes.length - 1; i >= 0; i--) {
+            if(element.childNodes[i].tagName == name) childElement.push(element.childNodes[i]);
+        };
+
+        return childElement;
+    }
+
+    function arrayContains(array, value){
+        if(!array) return false
+        for (var i = array.length - 1; i >= 0; i--) {
+            if(array[i] == value) return true;
+        };
     }
 
     // Iterate over each property of an object
