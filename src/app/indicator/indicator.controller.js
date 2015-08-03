@@ -12,6 +12,8 @@ angular.module('gisMobile')
     var markers = [];
 
     $scope.regions = [];
+    $scope.table = [];
+    $scope.tableHeader = [];
 
     $scope.setTab = function(tab){
         $scope.tab = tab;
@@ -68,7 +70,7 @@ angular.module('gisMobile')
     }
 
     $scope.$on('mapReady', function(){ Log.info('Map is ready'); status['mapReady'] = true; addDataToMap(); });
-    $scope.$on('dataReady', function(){ Log.info('Data is ready'); status['dataReady'] = true; addDataToMap(); });
+    $scope.$on('dataReady', function(){ Log.info('Data is ready'); status['dataReady'] = true; addDataToMap(); initTableHeader(); });
     $scope.toggleMarker = function(){
         $scope.showMarker = !$scope.showMarker;
         if($scope.showMarker){
@@ -81,37 +83,59 @@ angular.module('gisMobile')
         if(status['mapReady'] && status['dataReady']){
             $scope.legend = _.find(indicator.legend, { for: 'map'} );
             _.each(geometry.domainSet.MultiSurface, addZone);
-            _.each(indicator.marker.item, addMarker);
+
+            var firstZone = _.first(geometry.domainSet.MultiSurface);
+            var coord = _.first(firstZone.Polygon[0].outerBoundaryIs.coordinates.content);
+            map.setView(coord, 6);
+            if(indicator.marker)
+                _.each(indicator.marker.item, addMarker);
         }
+    }
+
+    function initTableHeader(){
+        $scope.tableHeader.push({
+            name: 'label',
+            label : 'Région'
+        })
+        _.forEach(indicator.param, function(param){
+            if(param.type != 'Element')
+                $scope.tableHeader.push({
+                    name: param.name,
+                    label: param.content
+                });
+        });
+        console.log($scope.tableHeader);
     }
 
     function addZone(zone){
         //Get indicator info and map legend
         var legend = $scope.legend;
         var zoneValues = _.find(indicator.value, { z : zone.id});
-        
+
         //Add zone to data table
-        $scope.regions.push({
-            label: zone.name.content,
-            men: zoneValues.men,
-            women: zoneValues.women
+        var regionInfo = { label : zone.name.content }
+        _.forEach(indicator.param, function(param, index){
+            if(param.type != 'Element'){
+                regionInfo[param.name] = zoneValues[param.name]
+            }
         });
+        $scope.table.push(regionInfo);
 
         //Build popup message
         var popupMsg = zone.name.content + '<br/>';
         for (var i = indicator.param.length - 1; i >= 0; i--) {
-            popupMsg += indicator.param[i].content + " : " + zoneValues[indicator.param[i].name] + " ";
+            // popupMsg += indicator.param[i].content + " : " + zoneValues[indicator.param[i].name] + " ";
         };
         popupMsg += '<br/>' + 'Description : ' + zone.description.content;
 
         //Add zone polygons
         for (var i = zone.Polygon.length - 1; i >= 0; i--) {
             var polygon = []
-            polygon.push(zone.Polygon[i].exterior.posList.content);
-            
+            polygon.push(zone.Polygon[i].outerBoundaryIs.coordinates.content);
+
             if(zone.Polygon[i].interior){
                 for (var j = zone.Polygon[i].interior.length - 1; j >= 0; j--) {
-                    polygon.push(zone.Polygon[i].interior[j].posList.content);
+                    polygon.push(zone.Polygon[i].innerBoundaryIs[j].coordinates.content);
                 };
             }
 
@@ -120,6 +144,7 @@ angular.module('gisMobile')
                 fillOpacity: 0.6,
                 color: 'black',
                 fillColor: getColor(zoneValues[legend.value], legend),
+                // fillColor: getColor(1, legend),
                 weight: 1
             });
             leafPoly.bindPopup(popupMsg);
