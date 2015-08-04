@@ -17,6 +17,7 @@ angular.module('gisMobile').controller('IndicatorsCtrl', function($scope, $state
 
         getByCategory($state.params.cat)
         .then(function(indicators){
+            console.log(indicators);
             $scope.indicators = [];
             _.each(indicators, addIndicator);
         });

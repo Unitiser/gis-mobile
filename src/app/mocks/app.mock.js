@@ -76,6 +76,35 @@ angular
         }
     },
 
+    indicatorWithElement: {
+        name: 'primary',
+        label: 'Primaire',
+        description: 'This is a description',
+        param: [{
+            name: 'project',
+            type: 'Element',
+            param : [{name : 'name', type : 'String', content : 'Nom'},
+                     {name : 'value', type : 'Integer', content : 'Valeur'},
+                     {name : 'financial', type : 'String', content : 'Financement'},
+                     {name : 'note', type : 'Integer', content : 'Note'}]
+        }],
+        value: [{
+            z: '293',
+            total: '2',
+            project: [{financial: 'FIDA', name: 'projet_17', note: '19', value: '5.0E7'},
+                      {financial: 'CI', name: 'projet_20', note: '2', value: '1.5E8'}]
+        },{
+            z: '294',
+            total: '2',
+            project: [{financial: 'FIDA', name: 'projet_11', note: '7', value: '3.0E7'},
+                      {financial: 'UE', name: 'projet_21', note: '16', value: '2.5E8'}]
+        }],
+        version: {
+            date: '10/20/2012',
+            content: '1.0'
+        }
+    },
+
     indicatorSummary: {
         id: 'something',
         label: 'Else',
@@ -198,6 +227,16 @@ angular
             color: '#FF0000',
             content: '201 et plus'
         }]
+    },
+    legendPieChartBy : {
+        by : 'project.financial',
+        for : 'pieChartBy',
+        value : 'project.value',
+        title : 'Montant par bailleur de fond',
+        item : [{color : '#ff0000', id : 'Banque Mondial'},
+                {color : '#00ff00', id : 'CI'},
+                {color : '#0000ff', id : 'FIDA'},
+                {color : '#ff00ff', id : 'UE'}]
     },
     alerts: [{
         type: 'totalParam',

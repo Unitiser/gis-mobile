@@ -1,7 +1,7 @@
 <ion-view id="side-menu" class="custom-side-menu" ng-click="toggleMenu()" ng-show="isMenuVisible">
     <ion-content class="has-header">
       <ion-list>
-        <ion-item class="item-checkbox">
+        <ion-item class="item-checkbox" ng-if="markers.length">
             <label class="checkbox">
                 <input type="checkbox"  ng-click="toggleMarker()">
             </label>

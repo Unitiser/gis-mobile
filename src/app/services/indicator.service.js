@@ -139,9 +139,22 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
         };
 
         for (var i = params.length - 1; i >= 0; i--) {
+
+            //Deal with element type params
+            if(params[i].type == 'Element'){
+                var elementName = params[i].name;
+                dynamicStruct.value[elementName] = {};
+                dynamicStruct.value[elementName].attrs = [];
+                _.forEach(params[i].param, function(param){
+                    dynamicStruct.value[elementName].attrs.push(param.name);
+                });
+                continue;
+            }
+
             dynamicStruct.value.attrs.push(params[i].name)
         };
 
+        console.log(dynamicStruct);
         return dynamicStruct;
     }
 

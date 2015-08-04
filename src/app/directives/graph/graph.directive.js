@@ -19,6 +19,7 @@ angular.module('gisMobile').directive('gisChart', function(){
                     var chart;
                     switch(scope.for){
                         case 'pieChart':
+                        case 'pieChartBy':
                             canvas.width = screen.width - 20;
                             canvas.height = 400;
                             var chart = new Chart(canvas.getContext("2d")).Pie(data, {legend : true, animation: false});

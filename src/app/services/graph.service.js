@@ -12,6 +12,9 @@ angular.module('gisMobile').service('Graph', function($q){
             case 'totalBarChart':
                 return getTotalBarChartConfig(indicator, geometry, legend);
             break;
+            case 'pieChartBy' :
+                return getPieChartByConfig(indicator, geometry, legend);
+            break;
             default:
                 Log.warn(legend.for + ' is not implemented');
             break
@@ -71,6 +74,43 @@ angular.module('gisMobile').service('Graph', function($q){
                 data: data[param]
             });
         });
+        return config;
+    }
+
+    function getPieChartByConfig(indicator, geometry, legend){
+        var by = legend.by.split('.');
+        var byElement = by[0];
+        var byProperty = by[1];
+        var valueProperty = legend.value.split('.')[1];
+
+        // Get all the elements
+        var elements = _.flatten(_.pluck(indicator.value, byElement));
+
+        // Group them by property
+        var elementsByProperty = {};
+        _.forEach(elements, function(element){
+            //Skip undefined entries
+            if(element == undefined) return; 
+            
+            //If the byProperty doesnt exist yet, create its array
+            if(!elementsByProperty[element[byProperty]]) 
+                elementsByProperty[element[byProperty]] = [];
+
+            //Push the element's value in its byProperty
+            elementsByProperty[element[byProperty]].push(element[valueProperty]);
+        });
+
+        // Create config object
+        var config = [];
+
+        _.forEach(legend.item, function(item){
+            if(!elementsByProperty[item.id]) return;
+            config.push({
+                value: _.sum(elementsByProperty[item.id]),
+                label: item.id,
+                color: item.color
+            });
+        })
         return config;
     }
 

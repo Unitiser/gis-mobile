@@ -27,6 +27,7 @@ angular.module('gisMobile')
     }
 
     $scope.getData = function(){
+        // console.log($state.params.id);
         return Indicator.get($state.params.id)
         .then(function(ind){
             indicator = ind;
@@ -104,7 +105,6 @@ angular.module('gisMobile')
                     label: param.content
                 });
         });
-        console.log($scope.tableHeader);
     }
 
     function addZone(zone){
@@ -124,7 +124,8 @@ angular.module('gisMobile')
         //Build popup message
         var popupMsg = zone.name.content + '<br/>';
         for (var i = indicator.param.length - 1; i >= 0; i--) {
-            // popupMsg += indicator.param[i].content + " : " + zoneValues[indicator.param[i].name] + " ";
+            if(indicator.param[i].type == 'Element') continue;
+            popupMsg += indicator.param[i].content + " : " + zoneValues[indicator.param[i].name] + " ";
         };
         popupMsg += '<br/>' + 'Description : ' + zone.description.content;
 
@@ -261,7 +262,6 @@ angular.module('gisMobile')
                         areRequiredFieldTaken = areRequiredFieldTaken && alert.zone;
                     }
                     if(alert.comparatorType == 'isBetween'){
-                        console.log('hello?');
                         areNumericValueValid = areNumericValueValid && !isNaN(alert.comparatorValue2);
                         areRequiredFieldTaken = areRequiredFieldTaken && !!alert.comparatorValue2;
                     }
@@ -281,7 +281,6 @@ angular.module('gisMobile')
             if(!alert) return;
             var comparator = alert.comparatorType + ' ' + alert.comparatorValue1 + (alert.comparatorType == 'isBetween' ? ',' + alert.comparatorValue2 : '');
             var newAlert = Alert.create(alert.type, comparator, $state.params.id, alert.param, alert.zone);
-            console.log(newAlert.serialize());
             newAlert.isThrown().then(function(isThrown){
                 console.log(isThrown);
             });
