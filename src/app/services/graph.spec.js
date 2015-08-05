@@ -42,10 +42,3 @@ describe('Graph service', function(){
         console.log(config);
     });
 });
-
-
-// [Object{value: 300, label: 'Femmes', color: '#000000'}, Object{value: 300, label: 'Hommes', color: '#FFFFFF'}]
-
-// [{value: 1, label: 'UE', color: '#00ff00'},
-// {value: 2, label: 'FIDA', color: '#0000ff'},
-// {value: 3, label: 'CI', color: '#ff00ff'}]
