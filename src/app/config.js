@@ -1,6 +1,6 @@
 angular.module('gisMobile')
 //URL to fetch the structure document
-.constant('STRUCTURE_URL', '/mobileApi/structure')
+.constant('STRUCTURE_URL', 'http://192.168.0.117:8080/evalpro-dashboard/mobileApi/structure')
 
 //Name of the NoSQL database that will be used localy
 .constant('LOCAL_DB_NAME', 'gisMobile')

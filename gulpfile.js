@@ -154,7 +154,7 @@ gulp.task('dev', ['removeWWW'], function(done){
 });
 
 
-gulp.task('prod', ['removeWWW'], function() {
+gulp.task('prod', ['removeWWW'], function(done) {
   //Use the prepared app.js
   paths.js.push('!./src/app/app.js');
   paths.js.unshift('./www/app.js');
@@ -163,7 +163,8 @@ gulp.task('prod', ['removeWWW'], function() {
     .pipe(preprocess({context: { NODE_ENV: 'production' }}))
     .pipe(gulp.dest('./www/'))
     .on('end', function(){
-      gulp.start(['bundle', 'fetchHTML', 'fetchAssets', 'fetchLibFonts', 'fetchLibImg','injectBundle']);
+      gulp.start(['bundle', 'fetchHTML', 'fetchAssets', 'fetchLibFonts', 'fetchLibImg','injectBundle'])
+      .on('end', done);
     });
 });
 

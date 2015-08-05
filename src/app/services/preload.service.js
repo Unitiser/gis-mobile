@@ -3,10 +3,12 @@ angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, Ind
     var Log = Logger.get('Preload');
     
     function checkNetwork(){
+        Log.info('Checking network');
         return $q.when($cordovaNetwork.isOnline());
     }
 
     function reloadStructure(){
+        Log.info('Reloading structure');
         return Indicator.flushStructure()
         .then(function(){
             Log.info('Structure flushed');

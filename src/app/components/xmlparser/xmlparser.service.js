@@ -18,6 +18,7 @@ angular.module('gis.xmlparser', []).service('xmlparser', function($q, $http){
                 resolve(res);
             })
             .error(function(e){
+                console.log(file + ' not found');
                 reject(e);
             });
         });
