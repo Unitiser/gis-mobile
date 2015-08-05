@@ -5,91 +5,23 @@ describe("Indicator service", function() {
     var xmlParserMock, localStorageMock;
     var readFileSpy, getStructureSpy, saveStructureSpy;
 
-    //Mock gis-mobile
-    beforeEach(module('gisMobile', function($provide){
-        xmlParserMock = {
-            readFileCount: 0,
-            readFile: function(url){
-                var defer = $q.defer();
-                defer.resolve(MOCKS.structure);
-                return defer.promise;
-            },
-            loadFile: function(url){
-                var defer = $q.defer();
-                defer.resolve('mock');
-                return defer.promise;
-            },
-            readXML: function(xml, json){
-                var defer = $q.defer();
-                switch(xmlParserMock.readFileCount){
-                    case 0:
-                        xmlParserMock.readFileCount ++;
-                        defer.resolve(MOCKS.indicatorStatic);
-                    break;
-                    case 1:
-                        xmlParserMock.readFileCount = 0;
-                        defer.resolve(MOCKS.indicatorValue);
-                    break;
-                }
-                return defer.promise;
-            }
-        };
+    beforeEach(function(){
+        module('gisMobile');
+        module('gisMobileMocks');
 
-        localStorageMock = {
-            isMock: true,
-            isStructureCached: false,
-            isIndicatorCached: false,
-            getStructure: function(){
-                var defer = $q.defer();
-                if(localStorageMock.isStructureCached)
-                    defer.resolve(MOCKS.structure);
-                else
-                    defer.reject({name: 'not_found'});
-                return defer.promise;
-            },
-            saveStructure: function(){
-                localStorageMock.isStructureCached = true;
-            },
-            flushStructure: function(){
-                var defer = $q.defer();
-                defer.resolve();
-                localStorageMock.isStructureCached = false;
-                return defer.promise;
-            },
-            getIndicator: function(id){
-                var defer = $q.defer();
-                if(localStorageMock.isIndicatorCached && id == 'primary')
-                    defer.resolve(MOCKS.indicator);
-                else
-                    defer.reject({name: 'not_found'});
-                return defer.promise;
-            },
-            saveIndicator: function(){
-                localStorageMock.isIndicatorCached = true;
-            },
-            flushIndicator: function(){
-                localStorageMock.isIndicatorCached = false;
-                return $q.when(false);
-            }
-        }
+        inject(function(_$rootScope_, _Indicator_, _xmlparser_, _localStorage_) {
+            $rootScope = _$rootScope_;
+            Indicator = _Indicator_;
+            xmlParserMock = _xmlparser_;
+            localStorageMock = _localStorage_;
+        });
 
-        $provide.value('xmlparser', xmlParserMock);
-        $provide.value('localStorage', localStorageMock);
-
-        //Enroll some spies
         readFileSpy = spyOn(xmlParserMock, 'readFile').and.callThrough();
         getStructureSpy = spyOn(localStorageMock, 'getStructure').and.callThrough();
         saveStructureSpy = spyOn(localStorageMock, 'saveStructure').and.callThrough();
         spyOn(localStorageMock, 'flushStructure').and.callThrough();
         spyOn(localStorageMock, 'flushIndicator').and.callThrough();
-    }));
-
-    beforeEach(inject(function(_$q_, _$rootScope_, _Indicator_, _MOCKS_) {
-        $q = _$q_;
-        $rootScope = _$rootScope_;
-        Indicator = _Indicator_;
-        MOCKS = _MOCKS_;
-    }));
+    });
 
     it('should list the categories', function(done){
         var promise = Indicator.getCategories()

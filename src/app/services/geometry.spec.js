@@ -1,67 +1,24 @@
 describe('Geometry service', function(){
-    var $q, $rootScope, Geometry, localStorageMock, xmlParserMock, MOCKS;
+    var $rootScope, Geometry, localStorageMock, xmlParserMock, MOCKS;
+    // var $rootScope, Geometry;
     var readFileSpy;
     
-    beforeEach(module('gisMobile', function($provide){
-        xmlParserMock = {
-            readFile: function(url, json){
-                var defer = $q.defer();
-                if(url == '/some/place/geometry.xml')
-                    defer.resolve(MOCKS.geometry);
-                else
-                    defer.resolve(MOCKS.structure);
-                return defer.promise;
-            }
-        };
-        localStorageMock = {
-            isGeometryCached: false,
-            isStructureCached: false,
-            getStructure: function(){
-                var defer = $q.defer();
-                if(localStorageMock.isStructureCached)
-                    defer.resolve(MOCKS.structure);
-                else
-                    defer.reject({name: 'not_found'});
-                return defer.promise;
-            },
-            getGeometry: function(){
-                var defer = $q.defer();
-                if(localStorageMock.isGeometryCached){
-                    defer.resolve(MOCKS.geometry);
-                }
-                else
-                    defer.reject({name: 'not_found'});
-                return defer.promise;
-            },
-            saveGeometry: function(){
-                localStorageMock.isGeometryCached = true;
-            },
-            saveStructure: function(){
-                localStorageMock.isStructureCached = true;
-            },
-            flushGeometry: function(){
-                var defer = $q.defer();
-                localStorage.isGeometryCached = false;
-                defer.resolve();
-                return defer.promise;
-            }
-        };
+    beforeEach(function(){
+        module('gisMobile');
+        module('gisMobileMocks');
 
-        $provide.value('xmlparser', xmlParserMock);
-        $provide.value('localStorage', localStorageMock);
+        inject(function(_$rootScope_,_Geometry_, _localStorage_, _xmlparser_){
+            xmlParserMock = _xmlparser_
+            localStorageMock = _localStorage_;
+            $rootScope = _$rootScope_;
+            Geometry = _Geometry_;
 
-        readFileSpy = spyOn(xmlParserMock, 'readFile').and.callThrough();
-        spyOn(localStorageMock, 'getStructure').and.callThrough();
-        spyOn(localStorageMock, 'getGeometry').and.callThrough();
-        spyOn(localStorageMock, 'saveGeometry').and.callThrough();
-    }));
-    
-    beforeEach(inject(function(_$q_,_$rootScope_,_Geometry_, _MOCKS_){
-        $q = _$q_;
-        $rootScope = _$rootScope_;
-        Geometry = _Geometry_;
-        MOCKS = _MOCKS_;
-    }));
+            readFileSpy = spyOn(xmlParserMock, 'readFile').and.callThrough();
+            spyOn(localStorageMock, 'getStructure').and.callThrough();
+            spyOn(localStorageMock, 'getGeometry').and.callThrough();
+            spyOn(localStorageMock, 'saveGeometry').and.callThrough();
+        });
+    });
 
     it('should load geometry from file', function(done){
         Geometry.get()

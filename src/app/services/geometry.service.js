@@ -20,7 +20,7 @@ angular.module('gisMobile').service('Geometry', function(localStorage, xmlparser
             if(e.name != 'not_found') return e;
             return localStorage.getStructure()
             .then(function(struct){ return struct.geometry; })
-            .catch(function(){ //If structure doesnt exist load it
+            .catch(function(e){ //If structure doesnt exist load it
                 if(e.name != 'not_found') return e;
 
                 return xmlparser.readFile(STRUCTURE_URL, STRUCTURE_JSON)

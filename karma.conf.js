@@ -27,7 +27,7 @@ module.exports = function(config) {
     // ],
 
     files: bower.concat([
-      'app/mocks/app.mock.js',
+      'app/mocks/*.mock.js',
       'app/config.js',
       { pattern: 'app/components/**/*.service.js' },
       { pattern: 'app/services/*.service.js' },
