@@ -70,7 +70,8 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, A
                             value : value,
                             resolve: function(){
                                 console.log('Executing resolve');
-                                myAlert.remove();
+                                Alert.remove(myAlert);
+                                this.resolved = true;
                             }
                         });
                     });

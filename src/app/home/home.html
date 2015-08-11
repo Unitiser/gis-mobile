@@ -3,7 +3,7 @@
     <ion-content>
       <div ng-if="!hollowOffline && !notLoggedIn">
         <div class="card" ng-repeat="alert in alerts">
-          <div class="item item-text-wrap" on-swipe-right="alert.resolve()">
+          <div class="item item-text-wrap" on-swipe-right="alert.resolve()" ng-show="!alert.resolved">
             {{alert.value}}
           </div>
         </div>  

@@ -287,10 +287,8 @@ angular.module('gisMobile')
         myPopup.then(function(alert) {
             if(!alert) return;
             var comparator = alert.comparatorType + ' ' + alert.comparatorValue1 + (alert.comparatorType == 'isBetween' ? ',' + alert.comparatorValue2 : '');
-            var newAlert = Alert.create(alert.type, comparator, $state.params.id, alert.param, alert.zone);
-            newAlert.isThrown().then(function(isThrown){
-                console.log(isThrown);
-            });
+            var newAlert = Alert.create(alert.type, comparator, $state.params.id, alert.param, $state.params.cat, alert.zone);
+            $rootScope.isReloadForced = true;
         });
     }
 

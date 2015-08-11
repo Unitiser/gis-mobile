@@ -39,6 +39,5 @@ describe('Graph service', function(){
         expect(config.length).toBe(3);
         expect(config[0].value).toBe(150000000);
         expect(config[0].label).toBe('CI');
-        console.log(config);
     });
 });

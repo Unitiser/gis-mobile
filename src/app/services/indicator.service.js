@@ -53,15 +53,12 @@ angular.module('gisMobile').service('Indicator', function(xmlparser, $q, localSt
     function validate(id){
         var localVersion;
         var listVersion;
-        console.log(id);
         return localStorage.getIndicator(id)
         .then(function(local){
-            console.log(local);
             localVersion = local.version.content;
             return getSummary(id)
         })
         .then(function(summary){
-            console.log(summary);
             listVersion = summary.version;
             return localVersion == listVersion;
         })

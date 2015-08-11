@@ -59,16 +59,16 @@ describe('Alert comparator', function(){
 });
 
 describe('Alert object', function(){
-    var Alert, $q, $rootScope, MOCKS;
+    var Alert, $q, $rootScope, MOCKS, localStorageMock;
     beforeEach(module('gisMobile', function($provide){
         var indicatorMock = {
-            get: function(id){
+            getLocal: function(id){
                 var defer = $q.defer();
                 defer.resolve(MOCKS.indicator);
                 return defer.promise;
             }
         };
-        var localStorageMock = { saveAlert: function(){} }; 
+        localStorageMock = { saveAlert: function(alert){  } }; 
         $provide.value('Indicator', indicatorMock);
         $provide.value('localStorage', localStorageMock);
 
@@ -148,6 +148,11 @@ describe('Alert object', function(){
     });
 
     it('totalParam should be able to resolve itself', function(done){
+        console.log('Trying to resolve alert');
+        localStorageMock.saveAlert = function(alert){
+            expect(alert.resolved).toBe('1.0');
+        }
+
         var alert = Alert.create(MOCKS.savedAlerts[0]);
         alert.resolve('1.0');
         alert.isThrown().then(function(isThrown){ expect(isThrown).toBe(false) }).finally(done);

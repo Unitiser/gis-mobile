@@ -12,12 +12,12 @@ angular.module('gisMobile').service('Alert',function(Indicator, Structure, $q, l
 
     //Remove an alert
     function remove(alert){
-        return localStorage.removeAlert(alert._id);
+        return localStorage.removeAlert(alert.id);
     }
 
     //Functions used to extend Alert by type.
     var alertType = {
-        zoneParam: function(comparator, indId, param, zone){ 
+        zoneParam: function(comparator, indId, param, catId, zone){ 
             var ctx = this;
             this.isThrown = function(){
                 return ctx.isDismissed ? $q.when(false) : Indicator.getLocal(indId)
@@ -28,7 +28,12 @@ angular.module('gisMobile').service('Alert',function(Indicator, Structure, $q, l
 
             this.toString = function(){
                 var stringFormat = "La valeur de %s1 de %s5 de la zone %s6 %s2 %s3. La nouvelle valeur de %s1 est %s4.";
-                return Indicator.getLocal(indId)
+                var cat;
+                return Structure.getLocal()
+                .then(function(struct){ 
+                    cat = _.find(struct.category, {id : catId}); 
+                    return Indicator.getLocal(indId)
+                })
                 .then(function(indicator){
                     return stringFormat.replace(/%s1/g, param)
                     .replace(/%s2/g, comparatorString[comparator.toString().split(' ')[0]])
@@ -39,7 +44,7 @@ angular.module('gisMobile').service('Alert',function(Indicator, Structure, $q, l
                 });
             }
         },
-        totalParam: function(comparator, indId, param){
+        totalParam: function(comparator, indId, param, catId){
             var ctx = this;
             this.isThrown = function(){
                 return ctx.isDismissed ? $q.when(false) : Indicator.getLocal(indId)
@@ -50,39 +55,47 @@ angular.module('gisMobile').service('Alert',function(Indicator, Structure, $q, l
 
             this.toString = function(){
                 var stringFormat = "La somme de %s1 de %s5 %s2 %s3. La nouvelle somme de %s1 est %s4.";
-                return Indicator.getLocal(indId)
+                var cat;
+                return Structure.getLocal()
+                .then(function(struct){ 
+                    cat = _.find(struct.category, {id : catId}); 
+                    return Indicator.getLocal(indId)
+                })
                 .then(function(indicator){
                     return stringFormat.replace(/%s1/g, param)
                     .replace(/%s2/g, comparatorString[comparator.toString().split(' ')[0]])
                     .replace(/%s3/g, comparator.toString().split(' ')[1])
                     .replace(/%s4/g, _.sum(indicator.value, param))
-                    .replace(/%s5/g, indicator.label);
+                    .replace(/%s5/g, cat.label + ' ' + indicator.label);
                 });
             }
         }
     }
 
     function Alert(type, comparator){
+        //Slice type and comparator
         var args = Array.prototype.slice.call(arguments, 2);
-        var ctx = this;
-        if(typeof comparator === 'string'){ comparator = getComparator(comparator); }
         
         //retrieve rev and id
-        var rev = args.pop(), id = args.pop(), resolved = args.pop();
-        console.log(ctx);
+        this.rev = args.pop();
+        this.id = args.pop();
+        this.resolved = args.pop();
+
+        //Turn comparator string into an object
+        if(typeof comparator === 'string'){ comparator = getComparator(comparator); }
+        
         //the args become the params
         var params = args;
 
         //Dismiss an alert
         this.dismiss = function(){
-            ctx.isDismissed = true;
+            this.isDismissed = true;
         }
 
         //Resolve an alert
         this.resolve = function(version){
-            ctx.resolved = version;
-            console.log(ctx);
-            save(ctx);
+            this.resolved = version;
+            save(this);
         }
 
         //Serialize function to object
@@ -91,18 +104,14 @@ angular.module('gisMobile').service('Alert',function(Indicator, Structure, $q, l
                 type: type,
                 comparator: comparator.toString(),
                 params: params,
-                resolved: resolved,
-                _id: id,
-                _rev: rev
+                resolved: this.resolved,
+                _id: this.id,
+                _rev: this.rev
             }
         }
 
-        this.remove = function(){
-            remove(this.serialize());
-        }
-
         //Extend Alert with param type
-        alertType[type].apply(ctx, [comparator].concat(args)); 
+        alertType[type].apply(this, [comparator].concat(args)); 
     }
 
     //Conditions
