@@ -1,6 +1,6 @@
 angular.module('gisMobile')
 .controller('IndicatorCtrl',  function(xmlparser, $scope, $state, $ionicNavBarDelegate, $ionicSideMenuDelegate, 
-                                        Indicator, Geometry, Graph, $rootScope, $ionicPopup, Alert){
+                                        Indicator, Geometry, Graph, $rootScope, $ionicPopup, Alert, $cordovaSplashscreen){
     var tabTitles = {
         map : 'Carte',
         graph : 'Graphique',
@@ -27,8 +27,11 @@ angular.module('gisMobile')
     }
 
     $scope.getData = function(){
-        // console.log($state.params.id);
-        return Indicator.get($state.params.id)
+        $cordovaSplashscreen.show();
+        return Indicator.getLocal($state.params.id)
+        .catch(function(e){
+            return Indicator.getRemote($state.params.id);
+        })
         .then(function(ind){
             indicator = ind;
             return Geometry.get();
@@ -72,6 +75,7 @@ angular.module('gisMobile')
 
     $scope.$on('mapReady', function(){ Log.info('Map is ready'); status['mapReady'] = true; addDataToMap(); });
     $scope.$on('dataReady', function(){ Log.info('Data is ready'); status['dataReady'] = true; addDataToMap(); initTableHeader(); });
+
     $scope.toggleMarker = function(){
         $scope.showMarker = !$scope.showMarker;
         if($scope.showMarker){
@@ -88,8 +92,11 @@ angular.module('gisMobile')
             var firstZone = _.first(geometry.domainSet.MultiSurface);
             var coord = _.first(firstZone.Polygon[0].outerBoundaryIs.coordinates.content);
             map.setView(coord, 6);
+            
             if(indicator.marker)
                 _.each(indicator.marker.item, addMarker);
+
+            $cordovaSplashscreen.hide();
         }
     }
 
