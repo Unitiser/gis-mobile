@@ -2,8 +2,19 @@ angular.module('gisMobile')
 //URL to fetch the structure document
 .constant('STRUCTURE_URL', 'http://192.168.0.117:8080/evalpro-dashboard/mobileApi/structure')
 
+//URL to fetch the authentication token
+.constant('LOGIN_URL', '/auth')
+// .constant('LOGIN_URL', 'http://192.168.0.117:8080/evalpro-dashboard/oauth/token')
+
+//URL used to test if token is valid
+.constant('LOGIN_TEST_URL', 'http://192.168.0.117:8080/evalpro-dashboard/mobileApi/')
+
+//Client used to login
+.constant('LOGIN_CLIENT', 'my-client')
+
 //Name of the NoSQL database that will be used localy
 .constant('LOCAL_DB_NAME', 'gisMobile')
+
 
 //Known projection systems
 .constant('PROJECTIONS', [{
