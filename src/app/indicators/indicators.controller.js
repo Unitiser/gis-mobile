@@ -1,4 +1,4 @@
-angular.module('gisMobile').controller('IndicatorsCtrl', function($scope, $state, Indicator, $rootScope, $cordovaNetwork){
+angular.module('gisMobile').controller('IndicatorsCtrl', function($scope, $state, Structure, $rootScope, $cordovaNetwork){
     function addIndicator(indicator){
         $scope.indicators.push({
             id: indicator.id,
@@ -11,13 +11,12 @@ angular.module('gisMobile').controller('IndicatorsCtrl', function($scope, $state
     if($state.params.cat){
         var getByCategory;
         if($cordovaNetwork.isOnline())
-            getByCategory = Indicator.getByCategory;
+            getByCategory = Structure.getIndicatorFrom;
         else
-            getByCategory = Indicator.getOfflineByCategory;
+            getByCategory = Structure.getOfflineIndicatorFrom;
 
         getByCategory($state.params.cat)
         .then(function(indicators){
-            console.log(indicators);
             $scope.indicators = [];
             _.each(indicators, addIndicator);
         });
