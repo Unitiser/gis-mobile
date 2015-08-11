@@ -1,4 +1,4 @@
-angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL_DB_NAME){
+angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL_DB_NAME, LOGIN_CLIENT){
     var Log = Logger.get('localStorage');
 
     //Init
@@ -56,7 +56,7 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
     }
 
     function reset(){
-        $pouchdb.resetDatabase();
+        return $pouchdb.resetDatabase();
     }
 
     function saveAlert(alert){
@@ -93,6 +93,19 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
         });
     }
 
+    function saveAuth(auth){
+        auth._id = LOGIN_CLIENT;
+        return $pouchdb.put(auth);
+    }
+
+    function getAuth(){
+        return $pouchdb.get(LOGIN_CLIENT);
+    }
+
+    function removeAuth(){
+        return $pouchdb.remove(LOGIN_CLIENT);
+    }
+
     init();
     return {
         saveStructure: saveStructure,
@@ -111,6 +124,10 @@ angular.module('gisMobile').service('localStorage', function($q, $pouchdb, LOCAL
         listAlerts: listAlerts,
         removeAlert: removeAlert,
         flushAlerts: flushAlerts,
+
+        saveAuth : saveAuth,
+        getAuth : getAuth,
+        removeAuth : removeAuth,
 
         reset: reset
     }
