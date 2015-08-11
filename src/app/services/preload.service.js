@@ -1,4 +1,4 @@
-angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, Indicator, Geometry, Alert, $cordovaSplashscreen){
+angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, $rootScope, Structure, Indicator, Geometry, Alert, Auth, $cordovaSplashscreen){
     var categories;
     var Log = Logger.get('Preload');
     
@@ -7,19 +7,28 @@ angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, Ind
         return $q.when($cordovaNetwork.isOnline());
     }
 
+    function checkIsLoggedIn(){
+        Log.info('Checking authentication status');
+        return Auth.testConnection()
+        .then(function(isValid){
+            if(isValid)
+                return $q.when(true);
+            else
+                return $q.reject({ name: 'not_authenticated', message : 'You need to login burh' });
+        });
+    }
+
     function reloadStructure(){
         Log.info('Reloading structure');
-        return Indicator.flushStructure()
-        .then(function(){
-            Log.info('Structure flushed');
-            return Indicator.getCategories();
-        }).then(function(){
-            Log.info('Structure cached');
-            return true;
+        return Structure.getRemote()
+        .then(function(structure){
+            Log.info('Structure reloaded.');
+            return Structure.getCategories();
         })
         .catch(function(e){
+            Log.warn('Counld not reload structure');
             console.log(e);
-            return Indicator.getCategories();
+            return $q.reject(e);
         });
     }
 
@@ -60,21 +69,16 @@ angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, Ind
                 .then(function(isValid){
                     if(!isValid){
                         Log.info(id + ' is not valid, reloading');
-                        promise = Indicator.flushIndicator(id)
-                        .then(function(){
-                            Log.info(id + ' has been flushed');
-                            return Indicator.get(id).then(function(){ 
-                                Log.info(id + ' has been reloaded');
-                            });
+                        promise = Indicator.getRemote(id)
+                        .then(function(){ 
+                            Log.info(id + ' has been reloaded');
+                            return true;
                         })
-                        .catch(function(e){ 
-                            Log.info('Nothing to delete, trying to load');
-                            return Indicator.get(id).then(function(){ 
-                                Log.info(id + ' has been reloaded');
-                            });
+                        .catch(function(e){
+                            Log.warn('Unable to reload indicator ' + id);
+                            return $q.reject(e);
                         });
                     }
-                    Log.info(id + ' is valid');
                 });
             });
 
@@ -86,16 +90,22 @@ angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, Ind
         return $q.when($cordovaSplashscreen.hide());
     }
 
+    function showSplashScreen(){
+        return $q.when($cordovaSplashscreen.show());
+    }
+
     function go(){
-        return checkNetwork()
+        return showSplashScreen()
+        .then(checkNetwork)
         .then(function(isOnline){
+            $rootScope.isOnline = isOnline;
             if(isOnline){
-                return reloadStructure()
+                return checkIsLoggedIn()
+                .then(reloadStructure)
                 .then(preloadGeometry)
                 .then(preloadAlerts)
-                .then(hideSplashScreen);
             }else{
-                return false;
+                return $q.reject({ name : 'not_connected' });
             }
         })
         .then(function(){
@@ -104,7 +114,9 @@ angular.module('gisMobile').service('Preload', function($cordovaNetwork, $q, Ind
         .catch(function(e){
             console.log(e);
             Log.info('An error occured during the preloading.');
+            return $q.reject(e);
         })
+        .finally(hideSplashScreen);
     }
 
     return {
