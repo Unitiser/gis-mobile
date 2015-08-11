@@ -1,53 +1,55 @@
 <!-- The title of the ion-view will be shown on the navbar -->
 <ion-view view-title="GIS Mobile - Menu principal">
-    <ion-content >
+    <ion-content>
+      <div ng-if="!hollowOffline && !notLoggedIn">
         <div class="card" ng-repeat="alert in alerts">
-          <div class="item item-text-wrap">
-            {{alert}}
+          <div class="item item-text-wrap" on-swipe-right="alert.resolve()">
+            {{alert.value}}
           </div>
         </div>  
 
-        <!-- The content of the page -->
-        <ion-list>
-          <ion-item ng-repeat="item in items" class="item item-icon-left item-icon-right" href="#{{item.link}}">
-            <span class="icon {{item.icon}}"></span>
-            {{item.name}} 
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
-          <ion-item class="item item-icon-left item-icon-right" ng-click="login()">
-            <span class="icon"></span>
-                Test login
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
-          <ion-item class="item item-icon-left item-icon-right" ng-click="testGet()">
-            <span class="icon"></span>
-                Test1
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
-          <ion-item class="item item-icon-left item-icon-right" ng-click="testGetNoAccess()">
-            <span class="icon"></span>
-                Test2
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
-          <ion-item class="item item-icon-left item-icon-right" ng-click="testIndex()">
-            <span class="icon"></span>
-                Test2
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
+      </div>
 
-          <ion-item class="item item-icon-left item-icon-right" ng-click="testPreloadAlerts()">
-            <span class="icon"></span>
-                Test preload ...
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
-          
-          <ion-item class="item item-icon-left item-icon-right" ng-click="testReloadStructure()">
-            <span class="icon"></span>
-                Test reload structure ...
-            <span class="icon ion-ios-arrow-right"></span>
-          </ion-item>
+      <!-- Fallback -->
+      <div class="card" ng-if="hollowOffline || notLoggedIn || isOffline || hasUnexpectedLoginError">
+        <!-- We are offline and have no structure to show. -->
+        <div class="item item-text-wrap center" ng-if="hollowOffline && !notLoggedIn">
+          Aucun donnée hors ligne disponible.
+        </div>
 
-        </ion-list>
+        <!-- We are not logged in, no refresh token exist. -->
+        <div class="item item-text-wrap center" ng-if="hasUnexpectedLoginError">
+          Une erreur inattendu c'est produite lors de l'authentification.
+        </div>
+
+        <!-- We are not logged in, no refresh token exist. -->
+        <div class="item item-text-wrap center" ng-if="notLoggedIn && !usingCache">
+          Vous devez être authentifié pour accèder au contenu de l'application. <br>
+          <button ng-click="openLoginPopup()" class="button button-balanced">S'authentifier</button>
+        </div>
+        
+        <!-- We are not logged in, but we have cached data -->
+        <div class="item item-text-wrap center" ng-if="isOffline">
+          Aucune connection réseau disponible, l'information affiché provient de la dernière connection.
+        </div>
+        
+        <!-- We are not logged in, but we have cached data -->
+        <div class="item item-text-wrap center" ng-if="notLoggedIn && usingCache">
+          Vous n'êtes pas authentifié, l'information affiché provient de la dernière connection. <br>
+          <button ng-click="openLoginPopup()" class="button button-balanced">S'authentifier</button>
+        </div>
+
+      </div>
+
+      <!-- The content of the page -->
+      <ion-list>
+        <ion-item ng-repeat="item in items" class="item item-icon-left item-icon-right" href="#{{item.link}}">
+          <span class="icon {{item.icon}}"></span>
+          {{item.name}} 
+          <span class="icon ion-ios-arrow-right"></span>
+        </ion-item>
+      </ion-list>
+      
     </ion-content>
 </ion-view>
 

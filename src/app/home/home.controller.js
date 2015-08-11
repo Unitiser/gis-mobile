@@ -1,101 +1,146 @@
-angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Alert, Auth, $http, Preload){
-    //Load the external data during the splash screen
-    $scope.$on('$ionicView.loaded', function() {
-      ionic.Platform.ready( function() {
-        Logger.time('Loading categories');
-        Preload.go()
-        .then(function(){
-            return Indicator.getCategories();
-        })
-        .then(function(cats){
-            $scope.items = cats;
-            $scope.items.push({
-                name: 'Paramètres',
-                icon: 'ion-gear-b',
-                link: '/settings'
-            });
-            return Alert.list();
-        })
-        .then(function(alerts){
-            $scope.alerts = [];
-            console.log(alerts);
-            _.forEach(alerts, function(a, index){
-                console.log(a);
-                var myAlert = Alert.create(a);
-                if(myAlert.isThrown){
-                    console.log(myAlert);
-                    $scope.alerts.push( a.params[0] + " " + a.params[1] + " in zone " + a.params[2] + " " + a.comparator );
-                }
-            });
-        });
-      });
+angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, Alert, Auth, $http, Preload, Structure, $ionicPopup, $rootScope){
+    // Load the external data during the splash screen
+    $scope.$on('$ionicView.loaded', function() { ionic.Platform.ready( init ); });
+
+    $scope.$on('$ionicView.enter', function(){
+        if($rootScope.isReloadForced == true){
+            $rootScope.isReloadForced = false;
+            init();
+        }
     });
 
-    $scope.login = function(){
-        Auth.login();
+
+
+    function init(){
+        Logger.time('Loading categories');
+        return Preload.go()
+        .catch(function(e){
+            switch(e.name){
+                case 'not_connected':
+                    // Do nothing yet, we'll be able to proceed with localStorage if cached data exist.
+                    $scope.isOffline = true;
+                break;
+                case 'not_authenticated':
+                    // Ask user to connect
+                    $scope.notLoggedIn = true;
+                break;
+                case 'structure_not_found': 
+                    $scope.hollowOffline = true;
+                break;
+                case 'geometry_not_found' :
+                    // TODO : Determine what to do in this case
+                    $scope.geometryNotFound = true;
+                break;
+                default :
+                    Logger.warn('Unhandle preloading error');
+                    console.log(e);
+                break;
+            }
+        })
+        .then(loadStructure)
+        .then(loadAlerts)
+        .finally(addStaticMenuItems);
     }
 
-    $scope.testGet = function(){
-        $http.defaults.headers.common.Authorization = "Bearer " + Auth.accessToken();
-        $http.get('/testuser')
-        .success(function(res){
-            console.log(res);
-        }).error(function(e){
-            console.log(e);
+    function loadStructure(){
+        return Structure.getCategories().then(function(cats){
+            if($scope.notLoggedIn)
+                $scope.usingCache = true;
+
+            $scope.items = prepareCategories(cats);
+        })
+        .catch(function(e){ 
+            Logger.warn('Structure not in local storage.');
+            $scope.items = [];
+            $scope.hollowOffline = true;
         });
-        $http.defaults.headers.common.Authorization = "Basic";
     }
 
-    $scope.testGetNoAccess = function(){
-        
-        $http.get('/nobody')
-        .success(function(res){
-            console.log(res);
-        }).error(function(e){
-            console.log(e);
+    function loadAlerts(){
+        return Alert.list()
+        .then(function(alerts){
+            $scope.alerts = [];
+            _.forEach(alerts, function(a, index){
+                var myAlert = Alert.create(a);
+                if(myAlert.isThrown){
+
+                    console.log(myAlert.toString());
+                    myAlert.toString().then(function(value){
+                        $scope.alerts.push({ 
+                            value : value,
+                            resolve: function(){
+                                console.log('Executing resolve');
+                                myAlert.remove();
+                            }
+                        });
+                    });
+                }
+            });
+        })
+        .catch(function(e){
+            // TODO : Handle error
+            Logger.warn('Error while loading the alerts');
         });
-
     }
 
-    $scope.testIndex = function(){
-        $http.get('/testindex')
-        .success(function(res){
-            console.log(res);
-        }).error(function(e){
-            console.log(e);
+    function addStaticMenuItems(){
+        $scope.items.push({
+            name: 'Paramètres',
+            icon: 'ion-gear-b',
+            link: '/settings'
         });
     }
 
-    $scope.testPreloadAlerts = function(){
-        Preload.preloadAlerts();
+    function prepareCategories(cats){
+        categories = [];
+        for (var i = cats.length - 1; i >= 0; i--) {
+            categories.push({
+                name: cats[i].label,
+                icon: 'ion-map',
+                link: '/cat/indicators/' + cats[i].id,
+            });
+        };
+        return categories;
     }
 
-    $scope.testReloadStructure = function(){
-        Preload.reloadStructure();
+    function login(){
+        $scope.notLoggedIn = false;
+        $scope.hollowOffline = false;
+        $scope.hasUnexpectedLoginError = false;
+        Auth.login('my-user', 'my-password')
+        .catch(function(e){
+            console.log(JSON.stringify(e));
+            $scope.hasUnexpectedLoginError = true;
+        })
+        .finally(init);
     }
 
-    // $scope.testGetIndicator = function(){
-    //     Indicator.get('sample')
-    //     .then(function(indicator){
-    //         console.log(indicator);
-    //     })
-    //     .catch(function(e){
-    //         console.log(e);
-    //     });
-    // }
+    // Display login popup
+    $scope.openLoginPopup = function(){
+        //Init child scope
+        var modalScope = $scope.$new(true);
 
-    // $scope.testValidateVersion = function(){
-    //     Indicator.validate('sample')
-    //     .then(function(isValid){
-    //         console.log(isValid);
-    //     })
-    //     .catch(function(e){ console.log(e); });
-    // }
+        //Default values
+        modalScope.user = {
+            username : '',
+            password : ''
+        }
 
-    // $scope.testGeometry = function(){
-    //     Geometry.get()
-    //     .then(function(geo){ console.log(geo); });
-    // }
-
-
+        //Show popup
+        $ionicPopup.show({
+            templateUrl : 'app/home/login.modal.html',
+            scope : modalScope,
+            title : "S'authentifier",
+            buttons : [{
+                text : 'Annuler'
+            },{
+                text : 'Confimer',
+                type : 'button-positive',
+                onTap : function(e){ return modalScope.user; }
+            }]
+        })
+        .then(function(user){
+            login(user.username, user.password);
+        });
+    }
 });
