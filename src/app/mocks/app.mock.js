@@ -34,10 +34,22 @@ angular.module('gisMobileMocks', [])
         // Indicators
         getIndicator: function(id){
             var defer = $q.defer();
-            if(localStorageMock.isIndicatorCached && id == 'primary')
-                defer.resolve(MOCKS.indicator);
-            else
+            if(localStorageMock.isIndicatorCached){
+                switch(id){
+                    case 'primary':
+                        defer.resolve(MOCKS.indicator);
+                    break;
+                    case 'something':
+                        defer.resolve(MOCKS.indicator);
+                    break;
+                    default:
+                        defer.reject({name: 'not_found'});
+                    break;
+                }
+            }else{
                 defer.reject({name: 'not_found'});
+            }
+
             return defer.promise;
         },
         saveIndicator: function(){
