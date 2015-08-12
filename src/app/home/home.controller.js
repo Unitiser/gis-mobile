@@ -15,6 +15,11 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, A
         Logger.time('Loading categories');
         return Preload.go()
         .catch(function(e){
+            if(!e){
+                Logger.warn('Received null error');
+                console.log(e);
+                return;
+            }
             switch(e.name){
                 case 'not_connected':
                     // Do nothing yet, we'll be able to proceed with localStorage if cached data exist.
@@ -66,14 +71,15 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, A
 
                     console.log(myAlert.toString());
                     myAlert.toString().then(function(value){
-                        $scope.alerts.push({ 
+                        var a = { 
                             value : value,
                             resolve: function(){
                                 console.log('Executing resolve');
-                                Alert.remove(myAlert);
-                                this.resolved = true;
+                                Alert.remove(myAlert)
+                                .then(loadAlerts);
                             }
-                        });
+                        };
+                        $scope.alerts.push(a);
                     });
                 }
             });
@@ -104,11 +110,11 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, A
         return categories;
     }
 
-    function login(){
+    function login(username, password){
         $scope.notLoggedIn = false;
         $scope.hollowOffline = false;
         $scope.hasUnexpectedLoginError = false;
-        Auth.login('my-user', 'my-password')
+        Auth.login(username, password)
         .catch(function(e){
             console.log(JSON.stringify(e));
             $scope.hasUnexpectedLoginError = true;
@@ -123,8 +129,8 @@ angular.module('gisMobile').controller("HomeCtrl", function($scope, Indicator, A
 
         //Default values
         modalScope.user = {
-            username : '',
-            password : ''
+            username : 'my-user',
+            password : 'my-password'
         }
 
         //Show popup

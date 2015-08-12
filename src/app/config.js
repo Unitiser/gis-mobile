@@ -55,7 +55,7 @@ angular.module('gisMobile')
     },
     legend: {
         attrs: ['value', 'values', 'for', 'title', 'by', '$isArray'],
-        item: { attrs: ['min','max','color', 'id','$content'] }
+        item: { attrs: ['min','max','color', 'id','$content', '$isArray'] }
     },
     version: { attrs: ['date', '$content'] }
 })

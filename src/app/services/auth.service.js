@@ -97,7 +97,8 @@ angular.module('gisMobile')
 
         function testConnection(){
             var defer = $q.defer();
-
+            auth = {};
+            
             localStorage.getAuth()
             .then(function(storedAuth){
                 auth = storedAuth;

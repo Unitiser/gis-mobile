@@ -85,7 +85,7 @@ describe('Alert object', function(){
             expect(value).toBe(100);
             return true;
         }
-        var typedAlert = Alert.create('zoneParam', comparator, 'primary', 'men', 'z0');
+        var typedAlert = Alert.create('zoneParam', comparator, 'primary', 'men', '1', 'z0');
         typedAlert.isThrown().then(function(result){ expect(result).toBe(true); }).finally(done);
         $rootScope.$apply();
     });
@@ -117,14 +117,14 @@ describe('Alert object', function(){
     });
 
     it('zoneParam should serialize itself', function(){
-        var alert = Alert.create('zoneParam', 'isEqual 300', 'primary', 'men', 'z0');
+        var alert = Alert.create('zoneParam', 'isEqual 300', 'primary', 'men', '1', 'z0');
         var serialize = alert.serialize();
 
         expect(serialize.type).toBe('zoneParam');
         expect(serialize.comparator).toBe('isEqual 300');
         expect(serialize.params[0]).toBe('primary');
         expect(serialize.params[1]).toBe('men');
-        expect(serialize.params[2]).toBe('z0');
+        expect(serialize.params[3]).toBe('z0');
     });
 
     it('should be able to recreate alert from serialize object', function(done){
